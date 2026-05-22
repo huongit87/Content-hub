@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Content Hub — 5 Pages</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--pink:#F2C4CE;--pink-soft:#FAF0F3;--pink-deep:#C4667A;--pink-btn:#D4536A;--sage:#C8D8C0;--sage-soft:#EDF2EA;--sage-btn:#5DAA7A;--cream:#FAF7F2;--text:#2A1F1A;--text-mid:#6B5C50;--text-soft:#A89990;--border:#E8DDD4;--white:#FFFFFF;--gold:#C9A84C;--gold-soft:#FBF5E6;--purple:#9B8EC4;--purple-soft:#F3F0FA;--r:14px;--r-sm:8px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:#F5F5F7;color:var(--text);min-height:100vh;}
+header{background:var(--white);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo-mark{width:34px;height:34px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.logo-name{font-family:'Playfair Display',serif;font-size:18px;}
+.logo-tag{font-size:10px;color:var(--text-soft);letter-spacing:.08em;text-transform:uppercase;}
+.api-row{display:flex;align-items:center;gap:8px;}
+.api-label{font-size:11px;color:var(--text-soft);text-transform:uppercase;letter-spacing:.05em;}
+.api-input{background:var(--cream);border:1px solid var(--border);border-radius:var(--r-sm);padding:6px 12px;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;width:210px;}
+.main{max-width:980px;margin:0 auto;padding:28px 24px 80px;}
+.page-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:24px;}
+.page-card{background:var(--white);border:2px solid var(--border);border-radius:var(--r);padding:16px 10px;text-align:center;cursor:pointer;transition:all .2s;}
+.page-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08);}
+.page-icon{font-size:26px;margin-bottom:6px;}
+.page-name{font-size:12px;font-weight:500;line-height:1.3;}
+.content-area{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;display:none;}
+.page-header{padding:18px 22px;display:flex;align-items:center;gap:14px;}
+.page-body{padding:22px;}
+.ctabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.ctab{padding:8px 16px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:var(--cream);color:var(--text-mid);transition:all .15s;}
+.brand-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.brand-card{background:var(--cream);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;cursor:pointer;transition:all .15s;}
+.brand-card:hover{border-color:var(--pink);background:var(--pink-soft);}
+.brand-card.sel{border-color:var(--pink-deep);background:var(--pink-soft);}
+.bname{font-size:12px;font-weight:500;}
+.bsub{font-size:10px;color:var(--text-soft);margin-top:2px;}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;}
+.field label{font-size:10px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--text-soft);}
+.field input,.field select{background:var(--cream);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 11px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;}
+.field input::placeholder{color:var(--text-soft);}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:12px;}
+.fgrid .field{margin-bottom:0;}
+.gen-btn{width:100%;padding:12px;color:white;border:none;border-radius:var(--r-sm);font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:opacity .15s;display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:6px;}
+.gen-btn:hover{opacity:.88;}
+.gen-btn:disabled{opacity:.5;cursor:not-allowed;}
+.loading{display:none;text-align:center;padding:28px 0;}
+.loading.show{display:block;}
+.spinner{width:26px;height:26px;margin:0 auto 10px;border:2px solid var(--border);border-top-color:var(--pink-deep);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.ldtxt{font-size:13px;color:var(--text-soft);}
+.dots::after{content:'';animation:dots 1.4s infinite;}
+@keyframes dots{0%{content:''}33%{content:'.'}66%{content:'..'}100%{content:'...'}}
+.err{background:#FEF0F0;border:1px solid #F5C6CB;border-radius:var(--r-sm);padding:11px 14px;font-size:13px;color:#8B1A1A;display:none;margin-top:8px;}
+.err.show{display:block;}
+.out-wrap{display:none;margin-top:18px;}
+.out-wrap.show{display:block;}
+.otabs{display:flex;gap:6px;margin-bottom:12px;}
+.otab{padding:6px 13px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:var(--cream);color:var(--text-mid);transition:all .15s;}
+.otab.active{background:var(--pink-soft);border-color:var(--pink-deep);color:var(--pink-deep);}
+.opanel{display:none;}
+.opanel.active{display:block;}
+.ocard{background:#FAFAFA;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.ocard-h{padding:10px 16px;display:flex;align-items:center;gap:8px;background:linear-gradient(90deg,var(--pink-soft),var(--sage-soft));}
+.ocard-b{padding:14px 16px;}
+.editable{font-size:13px;line-height:1.9;color:var(--text);background:var(--cream);border-radius:var(--r-sm);padding:13px;outline:none;cursor:text;border:1.5px solid transparent;white-space:pre-wrap;min-height:60px;}
+.editable:focus{border-color:var(--pink-deep);}
+.crow{display:flex;gap:8px;margin-top:9px;}
+.cbtn{background:transparent;border:1px solid var(--border);border-radius:var(--r-sm);padding:5px 13px;font-size:11px;font-family:'DM Sans',sans-serif;color:var(--text-mid);cursor:pointer;transition:all .15s;}
+.cbtn:hover{border-color:var(--pink-deep);color:var(--pink-deep);}
+.cbtn.ok{background:var(--sage-soft);border-color:#7AAB6D;color:#3D6B35;}
+.rrow{display:flex;gap:8px;margin-top:10px;align-items:center;}
+.rinput{flex:1;background:var(--cream);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 10px;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;}
+.rbtn{background:var(--purple);color:white;border:none;border-radius:var(--r-sm);padding:7px 14px;font-size:12px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;white-space:nowrap;}
+.sp-box{background:var(--purple-soft);border:1.5px solid var(--purple);border-radius:var(--r);padding:14px;margin-bottom:14px;}
+.sp-title{font-size:12px;font-weight:500;color:#5B4FA0;margin-bottom:10px;}
+.sp-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:6px;cursor:pointer;transition:all .15s;}
+.sp-card:hover{border-color:var(--purple);}
+.sp-card.sel{border-color:var(--purple);background:var(--purple-soft);}
+.sp-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:3px;}
+.sp-meta{display:flex;gap:10px;font-size:11px;color:var(--text-soft);}
+.sp-hl{font-size:11px;color:var(--text-mid);margin-top:3px;}
+.cl-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
+.cl-stat{background:var(--cream);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;text-align:center;}
+.cl-stat-n{font-size:24px;font-weight:500;font-family:'Playfair Display',serif;color:#6B5C50;}
+.cl-stat-l{font-size:10px;color:var(--text-soft);text-transform:uppercase;letter-spacing:.05em;margin-top:2px;}
+.cl-legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px;}
+.cl-leg{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-mid);}
+.cl-dot{width:8px;height:8px;border-radius:50%;}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:16px;}
+.cal-hdr{text-align:center;font-size:10px;font-weight:500;color:var(--text-soft);letter-spacing:.05em;text-transform:uppercase;padding:5px 0;}
+.cal-cell{background:var(--white);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px;min-height:76px;cursor:pointer;transition:all .15s;}
+.cal-cell:hover{border-color:#8C7B6B;}
+.cal-cell.on{border-color:#8C7B6B;box-shadow:0 2px 10px rgba(140,123,107,.2);}
+.cal-cell.sp{background:linear-gradient(135deg,var(--gold-soft),var(--pink-soft));border-color:var(--gold);}
+.cal-cell.em{background:transparent;border-color:transparent;cursor:default;}
+.cal-date{font-size:11px;font-weight:500;color:var(--text-mid);margin-bottom:3px;}
+.pill{font-size:9px;padding:2px 4px;border-radius:3px;margin-bottom:2px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.pi{background:var(--sage-soft);color:#3D6B35;}
+.pv{background:var(--pink-soft);color:var(--pink-deep);}
+.ps{background:var(--gold-soft);color:#7A5C1A;}
+.dd{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:20px;display:none;margin-top:14px;}
+.dd.show{display:block;}
+.dd-title{font-family:'Playfair Display',serif;font-size:18px;margin-bottom:14px;}
+.dpost{border:1px solid var(--border);border-radius:var(--r-sm);overflow:hidden;margin-bottom:12px;}
+.dpost-h{padding:10px 14px;display:flex;align-items:center;gap:8px;}
+.dph-i{background:var(--sage-soft);}
+.dph-v{background:var(--pink-soft);}
+.dph-s{background:var(--gold-soft);}
+.dpost-b{padding:12px 14px;background:#FAFAFA;}
+.ds{margin-bottom:10px;}
+.ds-l{font-size:10px;font-weight:500;color:var(--text-soft);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;}
+.ds-c{font-size:12.5px;color:var(--text);line-height:1.8;background:var(--cream);border-radius:var(--r-sm);padding:10px 12px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="logo-mark">🎯</div>
+    <div>
+      <div class="logo-name">Content Hub</div>
+      <div class="logo-tag">Quản lý 5 Page · AI Content Creator</div>
+    </div>
+  </div>
+  <div class="api-row">
+    <span class="api-label">API Key</span>
+    <input class="api-input" type="password" id="api-key" placeholder="sk-ant-...">
+  </div>
+</header>
+<div class="main">
+  <div class="page-grid">
+    <div class="page-card" id="pc0" onclick="selPage(0)"><div class="page-icon">👔</div><div class="page-name">Thời trang Nam</div></div>
+    <div class="page-card" id="pc1" onclick="selPage(1)"><div class="page-icon">👗</div><div class="page-name">Thời trang Nữ</div></div>
+    <div class="page-card" id="pc2" onclick="selPage(2)"><div class="page-icon">🧒</div><div class="page-name">Trẻ em</div></div>
+    <div class="page-card" id="pc3" onclick="selPage(3)"><div class="page-icon">🏠</div><div class="page-name">Gia dụng</div></div>
+    <div class="page-card" id="pc4" onclick="selPage(4)"><div class="page-icon">🌿</div><div class="page-name">Góc chữa lành</div></div>
+  </div>
+  <div class="content-area" id="ca">
+    <div class="page-header" id="ph"></div>
+    <div class="page-body" id="pb"></div>
+  </div>
+</div>
+<script>
+const PAGES=[
+  {id:0,icon:'👔',name:'Thời trang Nam',sub:'Outfit, xu hướng, tips mix đồ nam',color:'#1E3A5F',bg:'#EEF3FA',btn:'#1E3A5F'},
+  {id:1,icon:'👗',name:'Thời trang Nữ',sub:'Váy đầm, outfit, xu hướng nữ',color:'#C4667A',bg:'#FAF0F3',btn:'#D4536A'},
+  {id:2,icon:'🧒',name:'Trẻ em',sub:'Thời trang, đồ chơi, sách, nuôi con',color:'#E8A020',bg:'#FDF5E6',btn:'#D4900A'},
+  {id:3,icon:'🏠',name:'Gia dụng',sub:'Review, tips, so sánh sản phẩm',color:'#7B5EA7',bg:'#F3F0FA',btn:'#7B5EA7'},
+  {id:4,icon:'🌿',name:'Góc chữa lành',sub:'Content plan 30 ngày · Ảnh + Video',color:'#8C7B6B',bg:'#FAF7F2',btn:'#8C7B6B'}
+];
+
+const B={
+  nam:[{n:'Coolmate',s:'Cotton 100%, bán chạy Shopee'},{n:'Owen',s:'Phong cách Hàn, 1000+ CH'},{n:'Routine',s:'Minimalist Việt'},{n:'Nobi Fashion',s:'Basic, bán chạy'},{n:'Aristino',s:'Công sở lịch lãm'},{n:'Decathlon',s:'Thể thao, giá tốt'},{n:'KRIK',s:'Tinh tế, hiện đại'},{n:'ICONDENIM',s:'Jeans, local brand'},{n:'Yame',s:'Nam nữ, miền Nam'},{n:'PT2000',s:'Quần tây, giá tốt'},{n:'Uniqlo Nam',s:'Minimalist Nhật'},{n:'H&M Nam',s:'Trendy, nhanh'},{n:'Zara Nam',s:'Cao cấp, QT'},{n:'GAP Nam',s:'Basic, bền'},{n:'Việt Tiến',s:'Công sở truyền thống'}],
+  nu:[{n:'Canifa',s:'Thương hiệu quốc gia VN'},{n:'IVY Moda',s:'Thanh lịch, công sở'},{n:'Elise',s:'Sang trọng'},{n:'Seven.AM',s:'Bền đẹp'},{n:'MARC Fashion',s:'Bán chạy Shopee'},{n:'K&K Fashion',s:'Giá tốt'},{n:'Yody',s:'Thoải mái'},{n:'Orchid',s:'Công sở nữ tính'},{n:'GOM',s:'Thanh lịch'},{n:'Blue Exchange',s:'Trẻ trung'},{n:'Uniqlo Nữ',s:'Minimalist Nhật'},{n:'H&M Nữ',s:'Trendy'},{n:'Zara Nữ',s:'Cao cấp'},{n:'GAP Nữ',s:'Basic bền'},{n:'Routine Nữ',s:'Minimalist Việt'}],
+  te:[{n:'BU Baby',s:'OEKO-TEX, cotton/tre'},{n:'Ualarogo',s:'Chất liệu tự nhiên'},{n:'Baa Baby',s:'Thương hiệu Việt'},{n:'Canifa Kids',s:'An toàn, đa dạng'},{n:'Rabity',s:'70+ showroom'},{n:'Lullaby',s:'15+ năm uy tín'},{n:'Animo',s:'Nghiên cứu bé Việt'},{n:'CHAANG',s:'0-5 tuổi VN'},{n:'Bossini Kids',s:'Chất lượng cao'},{n:'Mothercare',s:'Quốc tế uy tín'},{n:"Carter's",s:'Mỹ, Shopee'},{n:'Chicco',s:'Ý, an toàn'},{n:'Gymboree',s:'Vui nhộn'},{n:'Uniqlo Kids',s:'Nhật, bền'},{n:'H&M Kids',s:'Trendy, tốt'}],
+  gd:[{n:'LEGO',s:'Lắp ráp, tư duy'},{n:'Montessori Set',s:'Gỗ, 1-5 tuổi hot'},{n:'STEM Robot',s:'Lập trình cho bé'},{n:'Toyroyal',s:'Nhật, 4000+ SP'},{n:'MyKingdom',s:'4.9* Shopee'},{n:'Benrikids',s:'Lâu năm, GD'},{n:'Fisher-Price',s:'Mỹ, an toàn'},{n:'Melissa & Doug',s:'Gỗ cao cấp'}],
+  dc:[{n:'Búp bê / Barbie',s:'Evergreen'},{n:'Xe điều khiển',s:'Bé trai'},{n:'Đồ chơi vận động',s:'Trend 2025-2026'},{n:'Đất nặn / Slime',s:'Sáng tạo'},{n:'Pop it / Fidget',s:'Giảm stress'},{n:'Đồ chơi nhập vai',s:'Kỹ năng sống'},{n:'Thú bông',s:'Mọi tuổi'}],
+  sach:[{n:'Dế Mèn Phiêu Lưu Ký',s:'Tô Hoài, VN yêu thích nhất'},{n:'Harry Potter',s:'Kinh điển QT'},{n:'Doraemon',s:'Manga Nhật bán chạy'},{n:'Thám tử Conan',s:'Manga thiếu nhi'},{n:'Sách Ehon Nhật',s:'0-6 tuổi'},{n:'Điều Kỳ Diệu',s:'Toàn cầu yêu thích'},{n:'Tuổi Thơ Dữ Dội',s:'Phùng Quán'},{n:'Sách vải cảm giác',s:'0-2 tuổi'}],
+  gdung:{bep:[{n:'Sunhouse',s:'Việt Nam uy tín'},{n:'Philips',s:'Hà Lan'},{n:'Tefal',s:'Pháp'},{n:'Electrolux',s:'Thuỵ Điển'},{n:'Lock&Lock',s:'Hàn'}],nuoc:[{n:'Karofi',s:'VN bán chạy'},{n:'Aqua',s:'Nhật'},{n:'Panasonic',s:'Nhật uy tín'}],noi:[{n:'Happycall',s:'Hàn 2 mặt'},{n:'T-fal',s:'Pháp'},{n:'Inochi',s:'Nhật'}],dl:[{n:'Samsung',s:'Hàn'},{n:'LG',s:'Hàn bền'},{n:'Panasonic',s:'Nhật tiết kiệm điện'},{n:'Aqua',s:'Giá tốt VN'}],sm:[{n:'Xiaomi',s:'Giá tốt'},{n:'Philips Hue',s:'Đèn thông minh'},{n:'Aqara',s:'Smart home'}]}
+};
+
+const PLAN=[
+  {date:'23/5',th:'Yêu bản thân',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Góc nhà gỗ bình yên',q:'Chăm sóc bản thân không phải là ích kỷ — đó là điều kiện để bạn có thể yêu thương người khác.',pi:'Soft morning light in a wooden Japandi-style corner, steaming ceramic cup on oak table, dried pampas grass, succulent, sheer linen curtains. Pastel sage cream blush. Healing peaceful slow living. No people. Shallow DOF, 4K.',ca:'Có những buổi sáng, bạn chỉ cần ngồi yên và thở. Đó cũng là yêu bản thân. 🌿\n#GocChuaLanh #YeuBanThan #SlowLiving'},
+    {t:'v',tm:'Chiều 6h',ti:'Trà táo đỏ kỷ tử hoa cúc',q:'Hãy pha cho mình một ly trà — như cách bạn chăm sóc bản thân, từ từ và có chủ đích.',pi:'Hero shot: clear glass teapot with deep amber-red jujube tea, dried chamomile buds floating, goji berries visible, warm golden backlight on wooden surface. Jewel-like glistening steam rising. Pastel healing, no people, 4K.',pv:'C1: Táo đỏ, kỷ tử, hoa cúc vàng xếp đẹp — pan overhead chậm.\nC2: Tay thả nguyên liệu vào ấm, đổ nước sôi.\nC3(CHÍNH): Hero shot ly trà đỏ hổ phách lung linh.\nC4: Text overlay câu chữa lành.',ca:'Táo đỏ bổ huyết — Kỷ tử sáng mắt — Hoa cúc an thần 🍵\n#GocChuaLanh #TaoDoKyTu #HealingDrink'}
+  ]},
+  {date:'24/5',th:'Yêu bản thân',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Sách + matcha buổi sáng',q:'Bạn không cần phải trở nên hoàn hảo để xứng đáng được yêu thương — kể cả với chính mình.',pi:'Cozy morning corner: open book, ceramic matcha latte on marble coaster, morning sunlight, white hydrangea. Cream sage blush. Hygge aesthetic, 4K.',ca:'Buổi sáng này, hãy nhẹ nhàng với chính mình hơn một chút. 🌸\n#GocChuaLanh #SelfLove #BuoiSangBinhYen'},
+    {t:'v',tm:'Chiều 6h',ti:'Nước chanh vàng mật ong gừng',q:'Có những vết thương không cần thuốc — chỉ cần thời gian và sự tĩnh lặng.',pi:'Clear glass mug with warm golden lemon ginger honey water, lemon slice, honey drizzle. Warm morning light, wooden surface. Jewel-like 4K.',pv:'C1: Chanh vàng, gừng, mật ong — flat lay overhead.\nC2: Tay vắt chanh, mật ong chảy vàng óng.\nC3(CHÍNH): Hero shot ly nước ấm vàng.\nC4: Text câu chữa lành.',ca:'Chanh + Gừng + Mật ong 🍋 — 3 nguyên liệu tốt nhất buổi sáng.\n#GocChuaLanh #NuocChanhGung #HealingDrink'}
+  ]},
+  {date:'25/5',th:'Yêu bản thân',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Hoa trắng cạnh cửa sổ mưa',q:'Đôi khi, dừng lại không phải là bỏ cuộc. Đó là khi bạn đang tích lũy sức mạnh để tiếp tục.',pi:'Single white peony in minimalist ceramic vase on windowsill, soft morning light, raindrops on window glass. Dreamy ethereal healing. Cream white, 4K.',ca:'Hôm nay, cho phép mình dừng lại. Chỉ một chút thôi. 🌸\n#GocChuaLanh #TinhLang #SlowDown'},
+    {t:'v',tm:'Chiều 6h',ti:'Trà hoa hồng mật ong',q:'Bạn đủ tốt rồi. Ngay lúc này. Đúng như bạn đang là.',pi:'Delicate dried rose petals steeping in clear glass, deep pink-rose liquid, honey swirling. Golden afternoon light, marble. Romantic healing, jewel-like, 4K.',pv:'C1: Hoa hồng khô đỏ hồng xếp đẹp — overhead.\nC2: Thả hoa vào ấm, màu hồng loang.\nC3(CHÍNH): Hero shot ly trà hồng trong suốt.\nC4: Text câu chữa lành.',ca:'Trà hoa hồng — nhẹ nhàng như cách bạn nên đối xử với chính mình. 🌹\n#GocChuaLanh #TraHoaHong #HealingVibes'}
+  ]},
+  {date:'26/5',th:'Yêu bản thân',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Ban công cây xanh sáng sớm',q:'Hạnh phúc không phải là điểm đến. Nó nằm trong những khoảnh khắc nhỏ bạn chọn để chú ý.',pi:'Lush balcony with tropical plants, morning dew on leaves, white linen hammock, golden sunrise. Peaceful abundant healing. No people, 4K.',ca:'Hạnh phúc đang ở đây — ngay lúc bạn dừng lại để nhìn. 🌿\n#GocChuaLanh #HanhPhuc #NatureHealing'},
+    {t:'v',tm:'Chiều 6h',ti:'Nước atiso mật ong',q:'Gan là nơi giữ những điều bạn không nói ra. Hãy thả nhẹ — bắt đầu từ một ly nước ấm.',pi:'Warm amber artichoke tea in clear glass, honey swirling, dried artichoke flower beside, soft window light. Earthy healing golden. 4K.',pv:'C1: Atiso khô, mật ong trên khay gỗ — overhead.\nC2: Pha trà nhanh.\nC3(CHÍNH): Hero shot ly trà vàng ấm, honey drizzle.\nC4: Text câu chữa lành.',ca:'Atiso + Mật ong 🌿 — bạn bè của gan, của sự thanh lọc nhẹ nhàng.\n#GocChuaLanh #NuocAtiso #GanKhoe'}
+  ]},
+  {date:'27/5',th:'Buông bỏ',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Tay thả lá khô',q:'Buông bỏ không có nghĩa là bạn yếu đuối. Đó là khi bạn đủ mạnh để chọn bình yên thay vì đúng.',pi:'Close-up graceful hand releasing dry autumn leaf in forest, soft golden bokeh, leaves falling. Symbolic peaceful healing. Warm tones, 4K.',ca:'Có những thứ khi buông ra — bạn mới thực sự tự do. 🍂\n#GocChuaLanh #BuongBo #TuDo'},
+    {t:'v',tm:'Chiều 6h',ti:'Trà bạc hà chanh mật ong lạnh',q:'Cơ thể biết cách chữa lành — nếu bạn cho nó không gian để làm điều đó.',pi:'Fresh mint leaves and lemon slices in tall clear glass, honey drizzling in, ice. Bright refreshing green, summer healing, jewel-like. 4K.',pv:'C1: Bạc hà tươi, chanh vàng, mật ong — flat lay xanh mát.\nC2: Tay thả vào ly, mật ong chảy chậm.\nC3(CHÍNH): Hero shot ly xanh mát.\nC4: Text câu chữa lành.',ca:'Bạc hà + Chanh + Mật ong 🌿 — mùa hè này uống gì cho mát và lành nhất?\n#GocChuaLanh #TraBacHa #MuaHe'}
+  ]},
+  {date:'28/5',th:'Buông bỏ',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Ghế gỗ bên cửa sổ mưa',q:'Mưa không hỏi xem bạn có sẵn sàng không. Nó cứ rơi. Và cây cỏ vẫn xanh hơn sau đó.',pi:'Minimalist wooden chair by rain-streaked window, open book, soft grey light. Melancholic yet peaceful. Cream grey, 4K.',ca:'Sau những ngày mưa dài nhất — trời vẫn sẽ trong trở lại. 🌧️\n#GocChuaLanh #SauConMua #HyVong'},
+    {t:'v',tm:'Chiều 6h',ti:'Golden Milk gừng nghệ sữa dừa',q:'Đau không phải điểm yếu của bạn — đó là bằng chứng bạn đã dũng cảm đủ để cảm nhận.',pi:'Golden turmeric coconut milk latte in ceramic mug, turmeric powder on top, cinnamon stick, warm amber glow. Healing cozy. 4K.',pv:'C1: Nghệ vàng, gừng, sữa dừa — overhead ấm áp.\nC2: Đổ sữa dừa vào ly, màu vàng nghệ loang.\nC3(CHÍNH): Tách golden milk bốc hơi — hero shot.\nC4: Text câu chữa lành.',ca:'Golden Milk 💛 — thức uống chữa lành từ Đông y đến Tây y.\n#GocChuaLanh #GoldenMilk #ChuaViem'}
+  ]},
+  {date:'29/5',th:'Buông bỏ',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Hoa cúc đồng nội golden hour',q:'Bạn không cần ai đó để hoàn chỉnh mình. Bạn vốn đã đủ đầy — chỉ cần nhớ lại điều đó.',pi:'Wild chamomile field at golden hour, shallow DOF, one single flower in focus. Dreamy nostalgic healing. Warm gold, 4K.',ca:'Bạn vốn đã đủ đầy. Chỉ là đôi khi bạn quên mất. 🌼\n#GocChuaLanh #DuDay #YeuBanThan'},
+    {t:'v',tm:'Chiều 6h',ti:'Nước dưa leo bạc hà chanh',q:'Thân thể bạn làm việc không ngừng để giữ cho bạn sống. Hãy cảm ơn nó.',pi:'Tall clear glass with cucumber slices, mint leaves, lemon rounds in still water. Refreshing clean minimal. White marble, jewel-like. 4K.',pv:'C1: Dưa leo, bạc hà, chanh vàng — flat lay trắng tinh.\nC2: Tay thả lần lượt vào bình.\nC3(CHÍNH): Hero shot bình nước detox xanh mát.\nC4: Text câu chữa lành.',ca:'Dưa leo + Bạc hà + Chanh 🥒 — detox nhẹ nhất, mát nhất mùa hè.\n#GocChuaLanh #NuocDetox #CucumberWater'}
+  ]},
+  {date:'30/5',th:'Trân trọng hiện tại',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Tách trà bên hiên nhà',q:'Khoảnh khắc hiện tại là nơi duy nhất bạn thực sự sống.',pi:'Rustic wooden porch with ceramic tea cup, morning mist, green hills view. Pastoral peaceful healing. Warm earthy, 4K.',ca:'Buổi sáng này — chỉ cần ở đây, với ly trà này, là đủ. 🍵\n#GocChuaLanh #HienTai #SlowMorning'},
+    {t:'v',tm:'Chiều 6h',ti:'Trà hoa cúc mật ong',q:'Những điều bình dị nhất đôi khi lại là thứ chữa lành bạn sâu nhất.',pi:'Clear glass teapot with dried chamomile flowers steeping, pale golden liquid, honey jar with wooden dipper, soft afternoon light. Gentle healing, 4K.',pv:'C1: Hoa cúc vàng khô xếp đẹp, hũ mật ong — overhead.\nC2: Thả hoa vào ấm, đổ nước sôi — hoa nở ra.\nC3(CHÍNH): Hero shot ly trà hoa cúc vàng nhạt, mật ong chảy.\nC4: Text câu chữa lành.',ca:'Trà hoa cúc — nhẹ nhàng như một cái ôm buổi chiều. 🌼\n#GocChuaLanh #TraHoaCuc #Chamomile #AnThan'}
+  ]},
+  {date:'31/5',th:'Trân trọng hiện tại',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Nhật ký và bút viết tay',q:'Viết ra những điều bạn biết ơn hôm nay — không phải vì cuộc sống hoàn hảo, mà vì nó vẫn đang tiếp tục.',pi:'Open journal with handwritten notes, dried flower pressed between pages, simple pen, soft window light. Journaling gratitude. Cream sage, 4K.',ca:'Hôm nay, hãy viết xuống 3 điều bạn biết ơn. 📝\n#GocChuaLanh #BietOn #Gratitude'},
+    {t:'v',tm:'Chiều 6h',ti:'Nước chanh hạt chia mật ong',q:'Chăm sóc cơ thể không phải là xa xỉ — đó là nền tảng của mọi thứ bạn muốn làm.',pi:'Tall clear Kinto-style glass with chia seed water, lemon slices, honey swirl, chia seeds floating. Morning golden light, marble. Jewel-like 4K.',pv:'C1: Hạt chia, chanh vàng, mật ong — flat lay sáng.\nC2: Tay vắt chanh, thả chia, rót mật ong.\nC3(CHÍNH): Hero shot ly nước chia trong vắt, hạt chia nở.\nC4: Text câu chữa lành.',ca:'Hạt chia nở gấp 12 lần trong nước 🌱 — no lâu, đẹp da, detox nhẹ.\n#GocChuaLanh #ChiaWater #HatChia'}
+  ]},
+  {date:'1/6',th:'Ngày Thiếu nhi',sp:true,posts:[
+    {t:'s',tm:'Sáng 8h',ti:'🎉 Quốc tế Thiếu nhi',q:'Trong lòng mỗi người lớn vẫn còn một đứa trẻ đang chờ được chơi, được cười, được ngạc nhiên.',pi:'Whimsical child-like scene: tiny flowers, small journal, colorful wooden toys, morning light. Nostalgic joyful healing. Pastel rainbow, 4K.',ca:'1/6 — ngày nhắc đừng quên đứa trẻ bên trong mình. 🌈\n#GocChuaLanh #QuocTeThieuNhi #ChildInside'},
+    {t:'s',tm:'Chiều 6h',ti:'Trà táo đỏ cam quế đặc biệt',q:'Hãy sống với sự tò mò của một đứa trẻ — mọi thứ đều là một cuộc phiêu lưu.',pi:'Warm red jujube orange cinnamon tea in clear glass, deep amber, orange slice, cinnamon stick. Festive healing jewel-like. 4K.',pv:'C1: Táo đỏ, vỏ cam, quế — màu sắc rực rỡ vui tươi overhead.\nC2: Pha trà nhanh, màu đỏ cam loang.\nC3(CHÍNH): Hero shot ly trà đỏ cam ấm rực.\nC4: Text câu chữa lành vui tươi.',ca:'Trà táo đỏ cam quế 🍊 — ấm áp như ký ức tuổi thơ.\n#GocChuaLanh #QuocTeThieuNhi #TaoDoQuyCam'}
+  ]},
+  {date:'2/6',th:'Kết nối',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Hai tách trà đối diện nhau',q:'Kết nối thật sự không cần nhiều lời. Đôi khi chỉ cần ngồi cạnh nhau trong yên lặng là đủ.',pi:'Two ceramic cups of tea facing each other on wooden table, warm afternoon light. Connection warmth healing. Earthy tones, 4K.',ca:'Có những người, chỉ cần ngồi cạnh là đã thấy ấm hơn rồi. 🫶\n#GocChuaLanh #KetNoi #BanBe'},
+    {t:'v',tm:'Chiều 6h',ti:'Matcha oat milk latte lạnh',q:'Chăm sóc bản thân không cần phức tạp — đôi khi chỉ là một ly matcha và 5 phút tĩnh lặng.',pi:'Iced matcha oat milk latte in clear glass, beautiful green gradient layers, ice condensation. Aesthetic trendy healing. Sage green, 4K.',pv:'C1: Bột matcha xanh rực, sữa yến mạch, đá — overhead aesthetic.\nC2: Đánh matcha, đổ sữa — lớp màu đẹp.\nC3(CHÍNH): Hero shot ly matcha latte phân lớp xanh trắng.\nC4: Text câu chữa lành.',ca:'Matcha Oat Latte ☕ — đủ tỉnh táo, đủ nhẹ nhàng.\n#GocChuaLanh #MatchaLatte #OatMilk'}
+  ]},
+  {date:'3/6',th:'Hy vọng',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Bình minh qua rừng cây',q:'Mặt trời mọc mỗi ngày không phải để nhắc bạn phải làm gì — mà để nhắc rằng bạn có thêm một ngày nữa.',pi:'Misty forest at sunrise, golden rays filtering through trees, dew on leaves. Hopeful magical healing. Golden green, 4K.',ca:'Một ngày mới. Một trang trắng mới. 🌅\n#GocChuaLanh #BinhMinh #HyVong'},
+    {t:'v',tm:'Chiều 6h',ti:'Nước ép dứa gừng',q:'Mối quan hệ tốt nhất là nơi bạn được là chính mình.',pi:'Fresh pineapple juice with ginger in clear glass, vibrant golden yellow, pineapple wedge. Energizing healing jewel-like. 4K.',pv:'C1: Dứa tươi vàng rực, gừng — overhead tropical.\nC2: Ép dứa, màu vàng tươi chảy ra.\nC3(CHÍNH): Hero shot ly nước dứa vàng jewel-like.\nC4: Text câu chữa lành.',ca:'Dứa + Gừng 🍍 — enzyme bromelain hỗ trợ tiêu hoá, gừng chống viêm.\n#GocChuaLanh #NuocEpDua #PineappleJuice'}
+  ]},
+  {date:'4/6',th:'Hy vọng',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Chồi non mùa xuân',q:'Chồi non không biết mùa đông dài bao lâu. Nhưng nó vẫn cứ lớn lên khi đến thời điểm.',pi:'Tiny green sprouts emerging from dark soil, macro photography, morning dew. Symbol of hope new beginnings. 4K.',ca:'Bạn đang lớn lên — ngay cả khi bạn không nhận ra. 🌱\n#GocChuaLanh #TruongThanh #HyVong'},
+    {t:'v',tm:'Chiều 6h',ti:'Nước dừa tươi chanh lime bạc hà',q:'Đôi khi điều cơ thể cần nhất chỉ là nước — và sự chậm lại.',pi:'Fresh coconut water in clear glass with lime wheel and mint sprig, tropical leaves background. Refreshing tropical healing. 4K.',pv:'C1: Dừa tươi, chanh xanh lime, bạc hà — overhead tropical.\nC2: Rót nước dừa trong vắt vào ly.\nC3(CHÍNH): Hero shot ly nước dừa mát lạnh.\nC4: Text câu chữa lành.',ca:'Nước dừa tươi 🥥 — thức uống của thiên nhiên.\n#GocChuaLanh #NuocDua #CoconutWater'}
+  ]},
+  {date:'5/6',th:'Thiên nhiên',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Bước chân trần trên cỏ',q:'Thiên nhiên không vội vã — nhưng mọi thứ vẫn hoàn thành đúng lúc.',pi:'Bare feet on dewy green grass, morning light, garden setting. Grounding nature healing. Green warm earth, 4K.',ca:'Lần cuối bạn đi chân trần trên cỏ là khi nào? 🌿\n#GocChuaLanh #ThienNhien #Grounding'},
+    {t:'v',tm:'Chiều 6h',ti:'Trà lá dứa pandan mật ong',q:'Thiên nhiên đã chuẩn bị sẵn mọi thứ bạn cần — chỉ cần bạn chú ý.',pi:'Fragrant pandan leaf tea, vivid green in clear glass, honey drizzle, fresh pandan leaves. Tropical natural healing. 4K.',pv:'C1: Lá dứa xanh tươi, mật ong — overhead xanh mướt.\nC2: Đun lá dứa, nước xanh chảy ra.\nC3(CHÍNH): Hero shot ly trà xanh pandan trong suốt.\nC4: Text câu chữa lành.',ca:'Trà lá dứa 🌿 — thức uống Việt kinh điển, thơm nức, mát gan.\n#GocChuaLanh #TraLaDua #PandanTea'}
+  ]},
+  {date:'6/6',th:'Sức mạnh',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Ngọn nến trong đêm tối',q:'Một ngọn nến nhỏ vẫn đủ để thắp sáng cả căn phòng tối. Bạn cũng vậy.',pi:'Single candle flame in dark room, warm glow illuminating space, bokeh. Hope resilience healing. Warm amber, 4K.',ca:'Bạn không cần phải sáng như mặt trời — chỉ cần không tắt đi là đủ. 🕯️\n#GocChuaLanh #NgonNen #KienCuong'},
+    {t:'v',tm:'Chiều 6h',ti:'Trà đông trùng hạ thảo mật ong',q:'Cơ thể bạn mạnh mẽ hơn bạn nghĩ. Hãy tin nó.',pi:'Premium cordyceps mushroom tea in clear glass, golden amber, honey drizzle, dried cordyceps. Luxury healing, warm golden. 4K.',pv:'C1: Đông trùng hạ thảo vàng nâu quý giá, mật ong — overhead sang trọng.\nC2: Pha trà, màu hổ phách loang.\nC3(CHÍNH): Hero shot ly trà vàng quý.\nC4: Text câu chữa lành.',ca:'Đông trùng hạ thảo 🍄 — vua của các vị thuốc Đông y.\n#GocChuaLanh #DongTrungHaThao #Cordyceps'}
+  ]},
+  {date:'7/6',th:'Biết ơn',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Nắng chiều qua ô cửa',q:'Biết ơn không chỉ là cảm xúc — đó là kỹ năng bạn có thể luyện tập mỗi ngày.',pi:'Golden afternoon light streaming through window, dust motes, warm rays on wooden floor. Gratitude warmth healing. Golden warm, 4K.',ca:'Hôm nay, bạn biết ơn điều gì nhỏ nhất? ☀️\n#GocChuaLanh #BietOn #Gratitude'},
+    {t:'v',tm:'Chiều 6h',ti:'Trà hibiscus đỏ mật ong',q:'Màu đỏ không phải lúc nào cũng là nguy hiểm — đôi khi đó là sức sống.',pi:'Vibrant ruby red hibiscus tea in clear glass, deep crimson, honey swirl. Jewel-like stunning colour. 4K.',pv:'C1: Hoa hibiscus đỏ rực khô, mật ong — overhead rực rỡ.\nC2: Thả hoa vào nước, màu đỏ loang kỳ diệu.\nC3(CHÍNH): Hero shot ly trà đỏ ruby trong suốt.\nC4: Text câu chữa lành.',ca:'Trà hibiscus đỏ 🌺 — đẹp nhất, lành nhất mùa hè.\n#GocChuaLanh #Hibiscus #TraDoHibiscus'}
+  ]},
+  {date:'8/6',th:'Biết ơn',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Mặt hồ tĩnh lặng buổi sáng',q:'Tĩnh lặng không phải là trống rỗng. Đó là nơi bạn nghe được giọng nói thật sự của mình.',pi:'Still morning lake reflecting trees and sky, perfect mirror surface, mist rising. Serene meditative healing. Blue green, 4K.',ca:'Khi nào bạn thấy yên tĩnh nhất? Hãy tìm cách có thêm khoảnh khắc đó. 🪞\n#GocChuaLanh #TinhLang #Meditation'},
+    {t:'v',tm:'Chiều 6h',ti:'Nước ép dưa hấu bạc hà',q:'Tươi mát không đến từ bên ngoài — nó bắt đầu từ bên trong bạn.',pi:'Vibrant watermelon juice with fresh mint, deep pink-red, mint sprig, ice cubes. Refreshing healing bright. 4K.',pv:'C1: Dưa hấu đỏ tươi, bạc hà xanh — overhead đầy màu.\nC2: Ép dưa hấu, màu hồng đỏ chảy ra.\nC3(CHÍNH): Hero shot ly nước dưa hấu hồng mát.\nC4: Text câu chữa lành.',ca:'Dưa hấu + Bạc hà 🍉 — mát lạnh nhất mùa hè.\n#GocChuaLanh #NuocEpDuaHau #Watermelon'}
+  ]},
+  {date:'9/6',th:'Chấp nhận',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Bàn tay mở ra',q:'Chấp nhận không có nghĩa là bạn đồng ý. Đó là bạn quyết định không để nó kiểm soát bạn nữa.',pi:'Open palm hand facing upward in soft morning light, blurred green background. Acceptance letting go healing. 4K.',ca:'Chấp nhận là bước đầu tiên để thay đổi. 🤍\n#GocChuaLanh #ChapNhan #Acceptance'},
+    {t:'v',tm:'Chiều 6h',ti:'Trà bạch cúc kỷ tử',q:'Mắt nhìn rõ hơn khi tâm yên hơn.',pi:'White chrysanthemum flowers with red goji berries steeping in clear water, pale golden liquid. Traditional TCM beauty. 4K.',pv:'C1: Hoa bạch cúc trắng, kỷ tử đỏ — overhead tương phản đẹp.\nC2: Thả hoa và kỷ tử vào ấm.\nC3(CHÍNH): Hero shot ly trà trắng với kỷ tử đỏ nổi.\nC4: Text câu chữa lành.',ca:'Bạch cúc + Kỷ tử 🌼 — bài trà Đông y cho mắt sáng gan khoẻ.\n#GocChuaLanh #BachCuc #KyTu #DongY'}
+  ]},
+  {date:'10/6',th:'Chấp nhận',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Bầu trời sau cơn bão',q:'Sau cơn bão dữ dội nhất — bầu trời thường trong xanh và lặng lẽ hơn bao giờ hết.',pi:'Post-storm sky with dramatic clouds parting to reveal golden sunlight. Hope after difficulty healing sky. Dramatic gold blue, 4K.',ca:'Bạn đã qua bao nhiêu cơn bão rồi? Và bạn vẫn còn đây. 🌤️\n#GocChuaLanh #SauBao #TroiSangLai'},
+    {t:'v',tm:'Chiều 6h',ti:'Nước ép táo gừng chanh vàng',q:'Cơ thể bạn biết rõ hơn bạn nghĩ — hãy học cách lắng nghe nó.',pi:'Fresh apple ginger lemon juice, golden-green, apple slice garnish. Crisp refreshing healing. Marble, 4K.',pv:'C1: Táo xanh/đỏ, gừng, chanh vàng — overhead tươi sáng.\nC2: Ép táo, màu vàng xanh trong chảy ra.\nC3(CHÍNH): Hero shot ly nước táo vàng xanh.\nC4: Text câu chữa lành.',ca:'Táo + Gừng + Chanh 🍏 — bộ 3 detox nhẹ và ngon nhất.\n#GocChuaLanh #NuocEpTao #Detox'}
+  ]},
+  {date:'11/6',th:'Thiên nhiên',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Mưa rơi trên lá sen',q:'Lá sen không giữ nước mưa — nhưng nó vẫn đứng đó, xanh tươi và vững chắc.',pi:'Raindrops on lotus leaf, water beading and rolling off, macro photography. Green lotus, ethereal beauty. 4K.',ca:'Học cách để những điều không thuộc về mình trôi qua — như nước trôi trên lá sen. 🌧️\n#GocChuaLanh #LaSen #BuongBo'},
+    {t:'v',tm:'Chiều 6h',ti:'Nước nha đam mật ong chanh',q:'Cơ thể có khả năng tự chữa lành kỳ diệu — hãy hỗ trợ nó.',pi:'Clear aloe vera honey lemon drink in tall glass, aloe gel pieces visible, lemon slice, mint. Refreshing healing. 4K.',pv:'C1: Nha đam tươi, chanh vàng, mật ong — overhead xanh mát.\nC2: Cắt nha đam, thả vào ly với chanh và mật ong.\nC3(CHÍNH): Hero shot ly nha đam trong mát.\nC4: Text câu chữa lành.',ca:'Nha đam + Mật ong + Chanh 🌿 — bộ 3 chữa lành từ thiên nhiên.\n#GocChuaLanh #NhaDam #AloeVera'}
+  ]},
+  {date:'12/6',th:'Kết nối',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Bàn tay mẹ và con',q:'Tình yêu lớn nhất không cần nói ra — nó nằm trong những hành động nhỏ bé mỗi ngày.',pi:"Tender close-up of mother's hand gently holding child's small hand, soft warm light. Love connection healing. Warm cream, 4K.",ca:'Đôi khi "con yêu mẹ" không cần lời — chỉ cần một cái nắm tay thôi. 💛\n#GocChuaLanh #MeVaCon #TinhYeu'},
+    {t:'v',tm:'Chiều 6h',ti:'Trà nhân sâm mật ong',q:'Bạn đã cho đi rất nhiều. Đã đến lúc nhận lại — dù chỉ là từ chính mình.',pi:'Premium ginseng tea with honey in clear ceramic cup, golden amber, thin ginseng slices. Luxury healing. 4K.',pv:'C1: Nhân sâm quý giá, mật ong — overhead sang trọng.\nC2: Pha trà nhân sâm.\nC3(CHÍNH): Hero shot tách trà nhân sâm quý.\nC4: Text câu chữa lành.',ca:'Trà nhân sâm 🌿 — vua của các vị thuốc Đông y.\n#GocChuaLanh #NhanSam #Ginseng #DongY'}
+  ]},
+  {date:'13/6',th:'Yêu bản thân',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Gương nước phản chiếu bầu trời',q:'Bạn phản chiếu những gì bên trong bạn ra thế giới. Hãy chăm sóc điều bên trong.',pi:'Perfect water reflection of sky and clouds in still puddle. Inner outer world healing. Blue grey, 4K.',ca:'Thế giới bên ngoài là bản phản chiếu của thế giới bên trong. 🪞\n#GocChuaLanh #PhanChieu #InnerPeace'},
+    {t:'v',tm:'Chiều 6h',ti:'Trà ô long sữa ấm',q:'Những điều tốt đẹp nhất ẩn trong những khoảnh khắc bình thường.',pi:'Creamy oolong milk tea in clear glass, swirling milk clouds, warm amber layers. Aesthetic cozy healing. 4K.',pv:'C1: Lá ô long xoắn đẹp, sữa tươi — overhead ấm cúng.\nC2: Pha ô long, đổ sữa — màu sữa loang đẹp.\nC3(CHÍNH): Hero shot ly trà sữa ô long phân lớp.\nC4: Text câu chữa lành.',ca:'Trà ô long sữa ☕ — một ly ấm áp cho buổi chiều cần dừng lại.\n#GocChuaLanh #TraOLong #OolongTea'}
+  ]},
+  {date:'14/6',th:'Sức mạnh',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Ngọn núi trong sương mù',q:'Sức mạnh không phải là không bao giờ ngã. Đó là đứng dậy thêm một lần nữa.',pi:'Mountain peak emerging from morning clouds, golden light on summit. Strength perseverance healing. Misty blue gold, 4K.',ca:'Bạn đã đứng dậy bao nhiêu lần rồi? Và bạn vẫn đang đứng. ⛰️\n#GocChuaLanh #SucManh #KienCuong'},
+    {t:'v',tm:'Chiều 6h',ti:'Nước ép cà rốt cam gừng',q:'Nuôi dưỡng cơ thể là cách yêu thương người thân — bắt đầu từ chính mình.',pi:'Vibrant orange carrot ginger juice in clear glass, glowing orange. Energy healing jewel-like. 4K.',pv:'C1: Cà rốt cam rực, cam tươi, gừng — overhead đầy màu.\nC2: Ép cà rốt, màu cam rực chảy ra.\nC3(CHÍNH): Hero shot ly nước cam rực.\nC4: Text câu chữa lành.',ca:'Cà rốt + Cam + Gừng 🥕 — bộ tam vitamin C + beta-carotene mạnh nhất.\n#GocChuaLanh #CarrotJuice #VitaminC'}
+  ]},
+  {date:'15/6',th:'Trân trọng',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Tay cầm quả chín từ cây',q:'Mọi trái ngọt đều cần thời gian. Kiên nhẫn không phải là chờ đợi — đó là tin vào quá trình.',pi:'Hands gently holding ripe fruits from garden tree, dappled sunlight. Gratitude harvest healing. Warm green red, 4K.',ca:'Những điều tốt đẹp cần thời gian. Hãy tin vào quá trình. 🍎\n#GocChuaLanh #KienNhan #TrustTheProcess'},
+    {t:'v',tm:'Chiều 6h',ti:'Nước chanh vàng đào mật ong',q:'Không phải mọi thứ cần được sửa chữa — đôi khi chỉ cần được chấp nhận.',pi:'Peach lemonade with honey in clear glass, peach slices, lemon rounds, honey drizzle. Peachy-pink jewel-like, 4K.',pv:'C1: Đào tươi hồng, chanh vàng, mật ong — overhead hè ngọt.\nC2: Pha đào chanh mật ong vào ly.\nC3(CHÍNH): Hero shot ly nước hồng đào mát.\nC4: Text câu chữa lành.',ca:'Chanh đào mật ong 🍑 — ngọt thanh như cách học nhẹ nhàng với mọi thứ.\n#GocChuaLanh #NuocDaoMatOng #PeachLemonade'}
+  ]},
+  {date:'16/6',th:'Hy vọng',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Con đường mòn trong rừng',q:'Bạn không cần thấy cả con đường. Chỉ cần đủ sáng cho bước tiếp theo là đủ rồi.',pi:'Narrow woodland path with dappled sunlight, soft forest floor, misty distance. Hopeful healing. Green and gold, 4K.',ca:'Chỉ cần bước tiếp theo thôi. Chỉ một bước. 🌿\n#GocChuaLanh #ConDuong #HyVong'},
+    {t:'v',tm:'Chiều 6h',ti:'Nước ép lựu mật ong',q:'Bạn không cần cố gắng mỗi giây. Đôi khi chỉ cần tồn tại cũng đã là đủ rồi.',pi:'Deep ruby pomegranate juice with honey swirl in clear glass, pomegranate seeds. Glowing red, natural light. 4K.',pv:'C1: Hạt lựu đỏ rực xếp đẹp, mật ong.\nC2: Ép lựu, màu đỏ ruby chảy ra.\nC3(CHÍNH): Hero shot ly nước lựu đỏ jewel-like.\nC4: Text câu chữa lành.',ca:'Lựu đỏ + Mật ong 🍎 — chống oxy hoá mạnh, đẹp da.\n#GocChuaLanh #NuocEpLuu #Pomegranate'}
+  ]},
+  {date:'17/6',th:'Buông bỏ',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Mặt hồ phản chiếu hoàng hôn',q:'Bình yên không phải là không có sóng gió — đó là khả năng bình ổn giữa những làn sóng.',pi:'Serene lake reflecting golden sunset sky, calm water surface. Inner peace reflection healing. Blue gold, 4K.',ca:'Tĩnh lặng bên trong — thế giới bên ngoài sẽ tự rõ ràng hơn. 🌅\n#GocChuaLanh #TinhLang #InnerPeace'},
+    {t:'v',tm:'Chiều 6h',ti:'Trà sen mật ong',q:'Cây sen mọc từ bùn nhưng không hề bị ô nhiễm — bạn cũng có thể như vậy.',pi:'Pale pink lotus tea in delicate porcelain cup, fresh lotus petals beside, honey dripping. Pure elegant healing. 4K.',pv:'C1: Nhụy sen khô vàng nhạt, cánh sen hồng — overhead tinh tế.\nC2: Pha trà sen nhẹ nhàng.\nC3(CHÍNH): Hero shot tách trà sen hồng nhạt trong suốt.\nC4: Text câu chữa lành.',ca:'Trà sen — thanh tao như tâm hồn bạn muốn hướng đến. 🪷\n#GocChuaLanh #TraSen #LotusTeaVibes'}
+  ]},
+  {date:'18/6',th:'Biết ơn',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Mặt trời lặn trên biển',q:'Mỗi buổi hoàng hôn là lời nhắc nhở rằng ngày hôm nay đã được sống trọn vẹn.',pi:'Golden sunset over calm ocean, warm reflections on water, silhouette of palm trees. Gratitude for day lived. Deep gold orange, 4K.',ca:'Hôm nay bạn đã sống như thế nào? Dù thế nào — cảm ơn ngày hôm nay. 🌅\n#GocChuaLanh #HoangHon #BietOn'},
+    {t:'v',tm:'Chiều 6h',ti:'Nước ép dưa vàng mật ong',q:'Ngọt ngào không phải lúc nào cũng từ đường — đôi khi từ sự biết ơn.',pi:'Golden melon juice with honey in clear glass, vibrant yellow, melon garnish. Abundant sweet healing. 4K.',pv:'C1: Dưa vàng tươi, mật ong — overhead ấm áp vàng.\nC2: Ép dưa, màu vàng ngọt chảy ra.\nC3(CHÍNH): Hero shot ly nước dưa vàng đẹp.\nC4: Text câu chữa lành.',ca:'Dưa vàng + Mật ong 🍈 — ngọt nhất mùa hè.\n#GocChuaLanh #NuocEpDua #MelonJuice'}
+  ]},
+  {date:'19/6',th:'Tết Đoan Ngọ',sp:true,posts:[
+    {t:'s',tm:'Sáng 8h',ti:'🎋 Tết Đoan Ngọ 5/5 âm lịch',q:'Tết Đoan Ngọ nhắc nhở: đôi khi cần dừng lại giữa năm, nhìn lại — và chăm sóc cơ thể từ bên trong.',pi:'Traditional Vietnamese Doan Ngo festival: red sticky rice wine, lychee fruits, plums on bamboo tray. Cultural festive healing. Warm red green, 4K.',ca:'Tết Đoan Ngọ 🎋 — ngày giữa năm thanh lọc cơ thể theo truyền thống Việt.\n#GocChuaLanh #TetDoanNgo #TraditionalVietnamese'},
+    {t:'s',tm:'Chiều 6h',ti:'Video Đoan Ngọ — nước ép mận vải',q:'Tổ tiên đã biết từ lâu: ăn chua, uống mát vào ngày này là thanh lọc khéo léo nhất.',pi:'Traditional Doan Ngo drinks: plum juice, lychee alongside sticky rice wine. Cultural festive Vietnamese healing. Red white, 4K.',pv:'C1: Mận đỏ chua, vải tươi — màu đỏ hồng truyền thống.\nC2: Ép mận và vải, màu đỏ hồng loang.\nC3(CHÍNH): Hero shot ly nước đỏ hồng truyền thống.\nC4: Text ý nghĩa ngày Đoan Ngọ.',ca:'Tết Đoan Ngọ 5/5 🎋 — uống nước ép mận vải để thanh nhiệt!\n#GocChuaLanh #TetDoanNgo #NuocEpMan'}
+  ]},
+  {date:'20/6',th:'Yêu bản thân',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Trang giấy trắng và bút mới',q:'Mỗi ngày mới là một trang trắng. Bạn là người duy nhất cầm bút viết lên đó.',pi:'Clean white notebook page with beautiful fountain pen, morning light, simple desk. New beginnings. White gold, 4K.',ca:'Hôm nay bạn muốn viết gì lên trang này? ✨\n#GocChuaLanh #MoiNgay #KhoiDau'},
+    {t:'v',tm:'Chiều 6h',ti:'Matcha truyền thống koicha',q:'Chăm sóc bản thân là thứ xa xỉ nhất bạn có thể tặng cho chính mình.',pi:'Traditional matcha ceremony: bamboo whisk, matcha powder, ceramic bowl with vibrant green frothy matcha. Mindful ceremonial healing. Deep green terracotta, 4K.',pv:'C1: Bột matcha xanh rực, chổi tre, bát gốm — overhead lễ nghi.\nC2: Đánh matcha chậm rãi, bọt xanh đẹp.\nC3(CHÍNH): Hero shot bát matcha xanh đậm.\nC4: Text câu chữa lành.',ca:'Matcha truyền thống 🍵 — từng ngụm là bài học về sự chậm lại.\n#GocChuaLanh #Matcha #TraXanh #MatchaCeremony'}
+  ]},
+  {date:'21/6',th:'Trân trọng',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Hoa khô cạnh cửa sổ nắng',q:'Những khoảnh khắc đẹp nhất không phải là hoàn hảo — mà là những khoảnh khắc thật.',pi:'Single dried flower arrangement in minimal vase on sunny windowsill, soft bokeh, peaceful morning. Simple beauty. Cream blush, 4K.',ca:'Đẹp không phải là hoàn hảo. Đẹp là thật. 🌸\n#GocChuaLanh #VeDep #HienTai'},
+    {t:'v',tm:'Chiều 6h',ti:'Nước sả chanh vàng mật ong',q:'Đơn giản thường là cách chữa lành hiệu quả nhất.',pi:'Lemongrass and lemon honey water in tall clear glass, lemongrass stalks visible, lemon slice, honey. Warm golden-green healing. 4K.',pv:'C1: Sả tươi thơm, chanh vàng, mật ong — overhead tươi mát.\nC2: Pha nước sả, thả chanh, mật ong.\nC3(CHÍNH): Hero shot ly nước sả vàng nhạt thơm.\nC4: Text câu chữa lành.',ca:'Nước sả chanh mật ong 🌿 — Đông y dùng mấy nghìn năm, Tây y cũng xác nhận.\n#GocChuaLanh #NuocSa #LemongrassWater'}
+  ]},
+  {date:'22/6',th:'Khởi đầu mới',posts:[
+    {t:'i',tm:'Sáng 8h',ti:'Bình minh tháng mới',q:'Mỗi tháng mới là một trang trắng. Bạn là người duy nhất cầm bút viết lên đó.',pi:'Beautiful sunrise over mountains, golden light breaking through clouds. Hope fresh start healing dawn. Gold blue, 4K.',ca:'Tháng mới bắt đầu rồi — bạn muốn viết gì lên trang này? ✨\n#GocChuaLanh #ThangMoi #KhoiDauMoi'},
+    {t:'v',tm:'Chiều 6h',ti:'Trà gừng nghệ mật ong kết thúc tháng',q:'Kết thúc tháng này — bạn đã trưởng thành hơn theo cách nào đó. Dù nhỏ. Dù không ai thấy.',pi:'Warming ginger turmeric honey tea in ceramic mug, golden liquid, steam rising. Closing reflection healing warmth. 4K.',pv:'C1: Gừng tươi, nghệ, mật ong — overhead ấm áp vàng.\nC2: Pha trà gừng nghệ, màu vàng đẹp loang.\nC3(CHÍNH): Hero shot tách trà ấm vàng bốc hơi.\nC4: Text câu chữa lành kết thúc tháng.',ca:'Trà gừng nghệ mật ong ☕ — ấm áp như cái ôm cuối tháng.\nCảm ơn tháng vừa qua!\n#GocChuaLanh #KetThucThang #GungNghe'}
+  ]}
+];
+
+let CP=null,CT=null,SB='',SPD=null;
+
+function selPage(i){
+  CP=PAGES[i];
+  document.querySelectorAll('.page-card').forEach((c,j)=>{
+    c.classList.toggle('active',j===i);
+    c.style.borderColor=j===i?CP.color:'var(--border)';
+    c.style.background=j===i?CP.bg:'var(--white)';
+  });
+  const ca=document.getElementById('ca');
+  ca.style.display='block';
+  const ph=document.getElementById('ph');
+  ph.style.background='linear-gradient(135deg,'+CP.bg+',#fff)';
+  ph.innerHTML='<div style="font-size:28px">'+CP.icon+'</div><div><div style="font-family:\'Playfair Display\',serif;font-size:18px;font-weight:500;color:'+CP.color+'">'+CP.name+'</div><div style="font-size:12px;color:var(--text-soft);margin-top:2px">'+CP.sub+'</div></div>';
+  CT=null;SB='';SPD=null;
+  if(i===4) renderCL();
+  else if(i===0||i===1) renderFashion();
+  else if(i===2) renderKids();
+  else renderGD();
+  setTimeout(function(){ca.scrollIntoView({behavior:'smooth',block:'start'});},100);
+}
+
+function gv(id){var e=document.getElementById(id);return e?e.value.trim():'';}
+
+// ── FASHION ──
+function renderFashion(){
+  CT='brand';
+  var bl=CP.id===0?B.nam:B.nu;
+  var g=CP.id===0?'nam':'nữ';
+  document.getElementById('pb').innerHTML=
+    '<div class="ctabs">'+
+    '<div class="ctab" id="ct0" onclick="sFTab(\'brand\',this)">🏷️ Chọn thương hiệu</div>'+
+    '<div class="ctab" id="ct1" onclick="sFTab(\'trend\',this)">🔥 Xu hướng</div>'+
+    '<div class="ctab" id="ct2" onclick="sFTab(\'tips\',this)">💡 Tips mix đồ</div>'+
+    '<div class="ctab" id="ct3" onclick="sFTab(\'caption\',this)">✍️ Caption</div>'+
+    '</div>'+
+    '<div id="fpanel"></div>'+
+    '<div class="loading" id="ldm"><div class="spinner"></div><div class="ldtxt">Đang tạo content<span class="dots"></span></div></div>'+
+    '<div class="err" id="errm"></div>'+
+    '<div class="out-wrap" id="ow"><div class="otabs" id="ots"></div><div id="ops"></div></div>';
+  document.getElementById('ct0').style.background=CP.btn;
+  document.getElementById('ct0').style.borderColor=CP.btn;
+  document.getElementById('ct0').style.color='white';
+  rFBrands(bl);
+}
+
+function sFTab(t,el){
+  CT=t;SB='';SPD=null;
+  document.querySelectorAll('.ctab').forEach(function(x){x.classList.remove('active');x.style.cssText='';});
+  el.style.background=CP.btn;el.style.borderColor=CP.btn;el.style.color='white';
+  document.getElementById('ow').classList.remove('show');
+  var g=CP.id===0?'nam':'nữ';
+  var bl=CP.id===0?B.nam:B.nu;
+  if(t==='brand') rFBrands(bl);
+  else if(t==='trend') document.getElementById('fpanel').innerHTML='<div class="fgrid"><div class="field"><label>Mùa</label><select id="fs"><option>Hè 2026</option><option>Thu Đông 2026</option></select></div><div class="field"><label>Phong cách</label><input id="fts" type="text" placeholder="vd: Y2K, Quiet luxury..."></div></div><button class="gen-btn" style="background:'+CP.btn+'" onclick="gen()"><span>🔥</span> Tạo bài xu hướng</button>';
+  else if(t==='tips') document.getElementById('fpanel').innerHTML='<div class="field"><label>Chủ đề tips</label><input id="ftp" type="text" placeholder="vd: mặc đẹp ngân sách thấp..."></div><button class="gen-btn" style="background:'+CP.btn+'" onclick="gen()"><span>💡</span> Tạo tips</button>';
+  else if(t==='caption') document.getElementById('fpanel').innerHTML='<div class="field"><label>Mô tả ảnh</label><input id="fcd" type="text" placeholder="vd: áo trắng oversize tối giản..."></div><button class="gen-btn" style="background:'+CP.btn+'" onclick="gen()"><span>✍️</span> Tạo caption</button>';
+}
+
+function rFBrands(bl){
+  var cards=bl.map(function(b){return '<div class="brand-card" onclick="selB(\''+b.n+'\',this)"><div class="bname">'+b.n+'</div><div class="bsub">'+b.s+'</div></div>';}).join('');
+  document.getElementById('fpanel').innerHTML=
+    '<div class="sp-box">'+
+    '<div class="sp-title">🔥 Tìm sản phẩm của brand trên Shopee</div>'+
+    '<div class="brand-grid">'+cards+'</div>'+
+    '<input id="fcb" type="text" style="width:100%;background:var(--white);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 11px;font-size:13px;font-family:\'DM Sans\',sans-serif;color:var(--text);outline:none;margin-bottom:8px;" placeholder="Hoặc nhập brand khác...">'+
+    '<div style="display:flex;gap:8px;margin-bottom:8px">'+
+    '<button onclick="searchSP(\'bestseller\')" id="sbtn" style="flex:1;padding:9px;background:var(--purple);color:white;border:none;border-radius:var(--r-sm);font-size:12px;font-weight:500;font-family:\'DM Sans\',sans-serif;cursor:pointer;">🔥 SP Bán chạy nhất</button>'+
+    '<button onclick="searchSP(\'flashsale\')" id="fbtn" style="flex:1;padding:9px;background:#E8401C;color:white;border:none;border-radius:var(--r-sm);font-size:12px;font-weight:500;font-family:\'DM Sans\',sans-serif;cursor:pointer;">⚡ Flash Sale hôm nay</button>'+
+    '</div>'+
+    '<div style="border-top:1px solid var(--border);padding-top:10px;margin-top:4px">'+
+    '<div style="font-size:10px;font-weight:500;color:var(--text-soft);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px">🔗 Paste link sản phẩm hoặc link flash sale của brand</div>'+
+    '<div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">💡 Vào Shopee → trang shop brand → mục Flash Sale → copy link dán vào đây</div>'+
+    '<div style="display:flex;gap:8px">'+
+    '<input id="shopee-url" type="text" style="flex:1;background:var(--white);border:1px solid var(--gold);border-radius:var(--r-sm);padding:7px 10px;font-size:12px;font-family:\'DM Sans\',sans-serif;color:var(--text);outline:none;" placeholder="https://shopee.vn/Ten-san-pham-i.xxxxx.xxxxx">'+
+    '<button onclick="searchFromLink()" id="lbtn" style="background:var(--gold);color:white;border:none;border-radius:var(--r-sm);padding:7px 14px;font-size:12px;font-weight:500;font-family:\'DM Sans\',sans-serif;cursor:pointer;white-space:nowrap;">🔍 Tìm SP này</button>'+
+    '</div>'+
+    '<div id="lstatus" style="font-size:11px;color:#7A5C1A;margin-top:5px;display:none;"></div>'+
+    '</div>'+
+    '<div id="sstatus" style="font-size:11px;color:#5B4FA0;margin-top:8px;display:none;"></div>'+
+    '<div id="sresults" style="display:none;margin-top:10px;"></div>'+
+    '</div>'+
+    '<div class="fgrid" style="margin-top:12px"><div class="field"><label>Loại sản phẩm</label><input id="fpt" type="text" placeholder="vd: áo polo, quần jeans..."></div><div class="field"><label>Phong cách</label><select id="fst"><option>Casual</option><option>Smart casual</option><option>Streetwear</option><option>Minimalist</option><option>Formal</option></select></div></div>'+
+    '<button class="gen-btn" style="background:'+CP.btn+'" onclick="gen()"><span>✨</span> Tạo bài giới thiệu thủ công</button>';
+}
+
+function selB(n,el){SB=n;document.querySelectorAll('.brand-card').forEach(function(c){c.classList.remove('sel');});el.classList.add('sel');}
+
+async function searchFromLink(){
+  var key=gv('api-key');
+  var url=gv('shopee-url');
+  if(!key){alert('Vui lòng nhập API Key!');return;}
+  if(!url){alert('Vui lòng nhập link Shopee!');return;}
+  var btn=document.getElementById('lbtn');
+  var status=document.getElementById('lstatus');
+  btn.textContent='⏳...';btn.disabled=true;
+  status.style.display='block';status.style.color='#7A5C1A';
+
+  // Nhận dạng loại link
+  var isFlashSale=url.includes('flash_sale')||url.includes('flashsale')||url.includes('flash-sale')||url.includes('campain')||url.includes('voucher');
+  var brand=SB||gv('fcb')||'';
+
+  var prompt='';
+  if(isFlashSale){
+    status.textContent='Phát hiện link Flash Sale — đang tìm SP đang giảm giá...';
+    prompt='Tim cac san pham dang FLASH SALE tu link nay: '+url+'\nBrand: '+brand+'\nTim san pham dang giam gia lon nhat, co discount ro rang.\nTra ve JSON: {"brand":"'+brand+'","type":"flashsale","products":[{"name":"ten SP","price":"gia flash sale","original_price":"gia goc","discount":"% giam","rating":"diem","sold":"so da ban","highlight":"mo ta noi bat"}]} Chi JSON.';
+  } else {
+    // Link SP thường — parse tên từ URL
+    var spName='';
+    try{
+      var decoded=decodeURIComponent(url);
+      var pathMatch=decoded.match(/shopee\.vn\/([^?]+)/);
+      if(pathMatch){spName=pathMatch[1].replace(/-i\.\d+\.\d+.*/,'').replace(/-/g,' ').trim();}
+    }catch(e){}
+    if(!spName){status.textContent='Không parse được link!';btn.textContent='🔍 Tìm SP này';btn.disabled=false;return;}
+    status.textContent='Tên SP: "'+spName+'" — đang tìm thông tin...';
+    prompt='Tim thong tin san pham "'+spName+'" tren Shopee. Tra ve JSON: {"name":"ten chinh xac","brand":"thuong hieu","price":"gia VND","original_price":"gia goc neu co sale","discount":"% giam neu co","rating":"diem","sold":"so da ban","highlight":"mo ta 1 cau"} Chi JSON.';
+  }
+
+  try{
+    var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,tools:[{type:'web_search_20250305',name:'web_search'}],messages:[{role:'user',content:prompt}]})});
+    var d=await r.json();
+    var text=(d.content||[]).filter(function(c){return c.type==='text';}).map(function(c){return c.text;}).join('');
+    var m=text.match(/\{[\s\S]*\}/);
+    if(!m){status.textContent='Không tìm được thông tin — thử nút Bán chạy / Flash Sale bên trên!';status.style.color='#8B4513';btn.textContent='🔍 Tìm SP này';btn.disabled=false;return;}
+    var parsed=JSON.parse(m[0]);
+
+    if(isFlashSale&&parsed.products){
+      // Hiện danh sách flash sale
+      var prods=parsed.products||[];
+      status.textContent='⚡ Tìm được '+prods.length+' SP Flash Sale! Click để viết bài:';
+      status.style.color='#3D6B35';
+      window._sprods={brand:parsed.brand||brand,products:prods,type:'flashsale'};
+      document.getElementById('sresults').style.display='block';
+      document.getElementById('sresults').innerHTML=prods.map(function(p,i){
+        return '<div class="sp-card" onclick="selSP('+i+')" id="spc'+i+'">'+
+          '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">'+
+          '<div class="sp-name">'+p.name+'</div>'+
+          (p.discount?'<span style="background:#E8401C;color:white;font-size:10px;padding:2px 7px;border-radius:8px;font-weight:500">⚡ -'+p.discount+'</span>':'')+
+          '</div>'+
+          '<div class="sp-meta">'+
+          '<span style="color:#E8401C;font-weight:500">💰 '+p.price+'</span>'+
+          (p.original_price?'<span style="text-decoration:line-through;color:var(--text-soft)">'+p.original_price+'</span>':'')+
+          '<span>⭐ '+p.rating+'</span><span>🛒 '+p.sold+' đã bán</span>'+
+          '</div>'+
+          '<div class="sp-hl">✨ '+p.highlight+'</div>'+
+          '</div>';
+      }).join('');
+    } else {
+      // SP đơn lẻ
+      SPD={name:parsed.name||'',brand:parsed.brand||brand,price:parsed.price||'',original_price:parsed.original_price||'',discount:parsed.discount||'',rating:parsed.rating||'',sold:parsed.sold||'',description:parsed.highlight||'',highlights:[parsed.highlight||''],link:url,isFlash:!!(parsed.discount&&parsed.discount!=='')};
+      status.innerHTML='✅ <strong>'+SPD.name+'</strong> — '+SPD.price+(SPD.discount?' <span style="color:#E8401C;font-weight:500">(-'+SPD.discount+')</span>':'')+' ⭐'+SPD.rating+' 🛒'+SPD.sold+' <button onclick="genFromSPD()" style="background:var(--pink-btn);color:white;border:none;border-radius:4px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:\'DM Sans\',sans-serif;margin-left:6px;">✨ Viết bài</button>';
+      status.style.color='#3D6B35';
+    }
+  }catch(e){status.textContent='Lỗi: '+e.message;status.style.color='#8B1A1A';}
+  btn.textContent='🔍 Tìm SP này';btn.disabled=false;
+}
+
+async function searchSP(mode){
+  var key=gv('api-key');
+  var brand=SB||gv('fcb');
+  if(!key){alert('Vui lòng nhập API Key!');return;}
+  if(!brand){alert('Vui lòng chọn hoặc nhập brand!');return;}
+  var isFlash=mode==='flashsale';
+  var sbtn=document.getElementById('sbtn');
+  var fbtn=document.getElementById('fbtn');
+  var status=document.getElementById('sstatus');
+  var results=document.getElementById('sresults');
+  if(isFlash){fbtn.innerHTML='⏳ Đang tìm...';fbtn.disabled=true;}
+  else{sbtn.innerHTML='⏳ Đang tìm...';sbtn.disabled=true;}
+  status.style.display='block';
+  status.style.color='#5B4FA0';
+  status.textContent=(isFlash?'Đang tìm flash sale':'Đang tìm SP bán chạy')+' của '+brand+' trên Shopee...';
+  results.style.display='none';SPD=null;
+  var g=CP.id===0?'nam':'nữ';
+  var typeLabel=isFlash?'dang co khuyen mai / giam gia tren Shopee':'ban chay nhat tren Shopee';
+  var prompt='Liet ke 5 san pham thoi trang '+g+' '+typeLabel+' cua thuong hieu "'+brand+'".\n'+
+    'Dua vao kien thuc cua ban ve cac san pham pho bien cua hang nay.\n'+
+    (isFlash?'Ghi ro % giam gia uoc tinh va gia tham khao.\n':'')+
+    'Tra ve theo dung format sau, khong co gi khac:\n'+
+    '===SP1===\n'+
+    'ten: [ten san pham cu the]\n'+
+    'gia: [gia ban VND]\n'+
+    'gia_goc: [gia goc neu co sale, de trong neu khong]\n'+
+    'giam: [% giam neu co, de trong neu khong]\n'+
+    'sao: [diem danh gia uoc tinh]\n'+
+    'da_ban: [so luong da ban uoc tinh]\n'+
+    'noi_bat: [1 cau mo ta noi bat nhat]\n'+
+    'loai: [loai san pham]\n'+
+    '===SP2===\n'+
+    '[tuong tu cho SP2 den SP5]';
+  try{
+    var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,messages:[{role:'user',content:prompt}]})});
+    var d=await r.json();
+    if(d.error){status.textContent='API lỗi: '+d.error.message;status.style.color='#8B1A1A';if(isFlash){fbtn.innerHTML='⚡ Flash Sale hôm nay';fbtn.disabled=false;}else{sbtn.innerHTML='🔥 SP Bán chạy nhất';sbtn.disabled=false;}return;}
+    var text=(d.content||[]).filter(function(c){return c.type==='text';}).map(function(c){return c.text;}).join('');
+    // Parse bằng delimiter
+    var prods=[];
+    var parts=text.split(/===SP\d+===/);
+    parts.forEach(function(part){
+      if(!part.trim()) return;
+      var obj={};
+      var lines=part.trim().split('\n');
+      lines.forEach(function(line){
+        var sep=line.indexOf(':');
+        if(sep>-1){
+          var k=line.substring(0,sep).trim();
+          var v=line.substring(sep+1).trim();
+          if(k==='ten') obj.name=v;
+          else if(k==='gia') obj.price=v;
+          else if(k==='gia_goc') obj.original_price=v;
+          else if(k==='giam') obj.discount=v;
+          else if(k==='sao') obj.rating=v;
+          else if(k==='da_ban') obj.sold=v;
+          else if(k==='noi_bat') obj.highlight=v;
+          else if(k==='loai') obj.category=v;
+        }
+      });
+      if(obj.name) prods.push(obj);
+    });
+    var parsed={brand:brand,type:isFlash?'flashsale':'bestseller',products:prods};
+    if(!prods.length){
+      status.textContent='Không tìm được kết quả — thử brand khác hoặc nhập thủ công!';
+      status.style.color='#8B4513';
+      if(isFlash){fbtn.innerHTML='⚡ Flash Sale hôm nay';fbtn.disabled=false;}
+      else{sbtn.innerHTML='🔥 SP Bán chạy nhất';sbtn.disabled=false;}
+      return;
+    }
+    status.textContent=(isFlash?'⚡ Flash Sale — ':'🔥 Bán chạy — ')+prods.length+' sản phẩm của '+brand+'! Click để viết bài:';
+    status.style.color='#3D6B35';
+    results.style.display='block';
+    window._sprods={brand:brand,products:prods,type:parsed.type};
+    results.innerHTML=prods.map(function(p,i){
+      var hasDiscount=p.discount&&p.discount!=='';
+      var flashBadge=hasDiscount?'<span style="background:#E8401C;color:white;font-size:10px;padding:2px 7px;border-radius:8px;font-weight:500">⚡ -'+p.discount+'</span>':'';
+      return '<div class="sp-card" onclick="selSP('+i+')" id="spc'+i+'">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">'+
+        '<div class="sp-name">'+p.name+'</div>'+flashBadge+
+        '</div>'+
+        '<div class="sp-meta">'+
+        '<span style="color:'+(hasDiscount?'#E8401C':'var(--text-mid)')+'">💰 '+p.price+'</span>'+
+        (p.original_price&&p.original_price!==''?'<span style="text-decoration:line-through;color:var(--text-soft)">'+p.original_price+'</span>':'')+
+        '<span>⭐ '+p.rating+'</span>'+
+        '<span>🛒 '+p.sold+' đã bán</span>'+
+        '</div>'+
+        '<div class="sp-hl">✨ '+p.highlight+'</div>'+
+        '</div>';
+    }).join('');
+  }catch(e){status.textContent='Lỗi: '+e.message;status.style.color='#8B1A1A';}
+  if(isFlash){fbtn.innerHTML='⚡ Flash Sale hôm nay';fbtn.disabled=false;}
+  else{sbtn.innerHTML='🔥 SP Bán chạy nhất';sbtn.disabled=false;}
+}
+
+function selSP(i){
+  document.querySelectorAll('.sp-card').forEach(function(c){c.classList.remove('sel');});
+  document.getElementById('spc'+i).classList.add('sel');
+  var p=window._sprods.products[i];
+  var isFlash=window._sprods.type==='flashsale';
+  SPD={name:p.name,brand:window._sprods.brand,price:p.price,original_price:p.original_price||'',discount:p.discount||'',rating:p.rating,sold:p.sold,description:p.highlight,highlights:[p.highlight],link:'',isFlash:isFlash};
+  genFromSPD();
+}
+
+async function genFromSPD(){
+  if(!SPD) return;
+  var key=gv('api-key');
+  var err=document.getElementById('errm');
+  err.classList.remove('show');
+  document.getElementById('ldm').classList.add('show');
+  document.getElementById('ow').classList.remove('show');
+  var g=CP.id===0?'nam':'nữ';
+  var flashInfo=SPD.isFlash&&SPD.discount?'\nDang FLASH SALE giam '+SPD.discount+(SPD.original_price?' tu '+SPD.original_price:'')+'!':''  ;
+  var prompt='Viet bai Facebook gioi thieu san pham thoi trang '+g+':\nTen: '+SPD.name+'\nBrand: '+SPD.brand+'\nGia: '+SPD.price+flashInfo+'\nDanh gia: '+SPD.rating+' sao, da ban: '+SPD.sold+'\nMo ta: '+SPD.description+'\n\nViet 150-200 chu tieng Viet, hook manh, mo ta dep, goi y phoi do, CTA nhe.'+(SPD.isFlash?' NHAN MANH FLASH SALE, tao cam giac gap, khuyen mua ngay.':' De cap gia va so da ban.')+' Tone: trendy, gan gui. 15 hashtag.\n===BAI===\n(noi dung)\n===CAPTION===\n(caption+hashtag)';
+  try{
+    var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,messages:[{role:'user',content:prompt}]})});
+    var d=await r.json();
+    document.getElementById('ldm').classList.remove('show');
+    if(d.error){err.textContent='API loi: '+d.error.message;err.classList.add('show');return;}
+    var raw=d.content[0].text.trim();
+    var bai=raw.includes('===BAI===')?raw.split('===BAI===')[1].split('===CAPTION===')[0].trim():raw;
+    var cap=raw.includes('===CAPTION===')?raw.split('===CAPTION===')[1].trim():'';
+    rOut(bai,cap);
+  }catch(e){document.getElementById('ldm').classList.remove('show');err.textContent='Loi: '+e.message;err.classList.add('show');}
+}
+
+// ── KIDS ──
+function renderKids(){
+  CT='fashion';
+  document.getElementById('pb').innerHTML=
+    '<div class="ctabs">'+
+    '<div class="ctab" id="kt0" onclick="sKTab(\'fashion\',this)">👕 Thời trang</div>'+
+    '<div class="ctab" id="kt1" onclick="sKTab(\'toygd\',this)">🧸 Đồ chơi GD</div>'+
+    '<div class="ctab" id="kt2" onclick="sKTab(\'toycb\',this)">🎮 Đồ chơi</div>'+
+    '<div class="ctab" id="kt3" onclick="sKTab(\'book\',this)">📚 Sách</div>'+
+    '<div class="ctab" id="kt4" onclick="sKTab(\'parent\',this)">👨‍👩‍👧 Tips nuôi con</div>'+
+    '</div>'+
+    '<div id="kpanel"></div>'+
+    '<div class="loading" id="ldm"><div class="spinner"></div><div class="ldtxt">Đang tạo content<span class="dots"></span></div></div>'+
+    '<div class="err" id="errm"></div>'+
+    '<div class="out-wrap" id="ow"><div class="otabs" id="ots"></div><div id="ops"></div></div>';
+  document.getElementById('kt0').style.background=CP.btn;document.getElementById('kt0').style.borderColor=CP.btn;document.getElementById('kt0').style.color='white';
+  rKFashion();
+}
+
+function sKTab(t,el){
+  CT=t;SB='';
+  document.querySelectorAll('.ctab').forEach(function(x){x.style.cssText='';});
+  el.style.background=CP.btn;el.style.borderColor=CP.btn;el.style.color='white';
+  document.getElementById('ow').classList.remove('show');
+  if(t==='fashion') rKFashion();
+  else if(t==='toygd') rKBrands(B.gd,'vd: LEGO, Montessori...');
+  else if(t==='toycb') rKBrands(B.dc,'vd: Búp bê, xe điều khiển...');
+  else if(t==='book') rKBrands(B.sach,'vd: Dế Mèn, Harry Potter...');
+  else document.getElementById('kpanel').innerHTML='<div class="field"><label>Chủ đề tips nuôi con</label><input id="fpar" type="text" placeholder="vd: dạy con tự lập..."></div><button class="gen-btn" style="background:'+CP.btn+'" onclick="gen()"><span>👨‍👩‍👧</span> Tạo bài tips</button>';
+}
+
+function rKFashion(){
+  var cards=B.te.map(function(b){return '<div class="brand-card" onclick="selBK(\''+b.n+'\',this)"><div class="bname">'+b.n+'</div><div class="bsub">'+b.s+'</div></div>';}).join('');
+  document.getElementById('kpanel').innerHTML='<div class="brand-grid">'+cards+'</div><div class="fgrid"><div class="field"><label>Hoặc tự nhập brand</label><input id="fcb" type="text" placeholder="Brand khác..."></div><div class="field"><label>Độ tuổi</label><select id="fage"><option>0-1 tuổi</option><option>1-3 tuổi</option><option>3-6 tuổi</option><option>6-10 tuổi</option><option>10-15 tuổi</option></select></div></div><div class="field"><label>Sản phẩm</label><input id="fprd" type="text" placeholder="vd: bộ đồ thu đông..."></div><button class="gen-btn" style="background:'+CP.btn+'" onclick="gen()"><span>👕</span> Tạo bài giới thiệu</button>';
+}
+
+function rKBrands(bl,ph){
+  var cards=bl.map(function(b){return '<div class="brand-card" onclick="selBK(\''+b.n+'\',this)"><div class="bname">'+b.n+'</div><div class="bsub">'+b.s+'</div></div>';}).join('');
+  document.getElementById('kpanel').innerHTML='<div class="brand-grid">'+cards+'</div><div class="field"><label>Hoặc tự nhập</label><input id="fcb" type="text" placeholder="'+ph+'"></div><div class="field"><label>Chi tiết muốn viết</label><input id="fdet" type="text" placeholder="vd: ưu điểm, phù hợp ai..."></div><button class="gen-btn" style="background:'+CP.btn+'" onclick="gen()"><span>✨</span> Tạo bài review</button>';
+}
+
+function selBK(n,el){SB=n;document.querySelectorAll('.brand-card').forEach(function(c){c.classList.remove('sel');});el.classList.add('sel');}
+
+// ── GIA DUNG ──
+function renderGD(){
+  CT='review';
+  document.getElementById('pb').innerHTML=
+    '<div class="ctabs">'+
+    '<div class="ctab" id="gt0" onclick="sGTab(\'review\',this)">⭐ Review</div>'+
+    '<div class="ctab" id="gt1" onclick="sGTab(\'tips\',this)">💡 Tips</div>'+
+    '<div class="ctab" id="gt2" onclick="sGTab(\'compare\',this)">⚖️ So sánh</div>'+
+    '<div class="ctab" id="gt3" onclick="sGTab(\'toplist\',this)">📋 Top list</div>'+
+    '</div>'+
+    '<div id="gpanel"></div>'+
+    '<div class="loading" id="ldm"><div class="spinner"></div><div class="ldtxt">Đang tạo content<span class="dots"></span></div></div>'+
+    '<div class="err" id="errm"></div>'+
+    '<div class="out-wrap" id="ow"><div class="otabs" id="ots"></div><div id="ops"></div></div>';
+  document.getElementById('gt0').style.background=CP.btn;document.getElementById('gt0').style.borderColor=CP.btn;document.getElementById('gt0').style.color='white';
+  rGReview();
+}
+
+function sGTab(t,el){
+  CT=t;SB='';
+  document.querySelectorAll('.ctab').forEach(function(x){x.style.cssText='';});
+  el.style.background=CP.btn;el.style.borderColor=CP.btn;el.style.color='white';
+  document.getElementById('ow').classList.remove('show');
+  if(t==='review') rGReview();
+  else if(t==='tips') document.getElementById('gpanel').innerHTML='<div class="field"><label>Đồ dùng / chủ đề</label><input id="gtp" type="text" placeholder="vd: tips dùng nồi chiên..."></div><button class="gen-btn" style="background:'+CP.btn+'" onclick="gen()"><span>💡</span> Tạo bài tips</button>';
+  else if(t==='compare') document.getElementById('gpanel').innerHTML='<div class="fgrid"><div class="field"><label>Sản phẩm A</label><input id="gpa" type="text" placeholder="vd: Nồi chiên Philips"></div><div class="field"><label>Sản phẩm B</label><input id="gpb" type="text" placeholder="vd: Nồi chiên Cosori"></div></div><button class="gen-btn" style="background:'+CP.btn+'" onclick="gen()"><span>⚖️</span> Tạo bài so sánh</button>';
+  else document.getElementById('gpanel').innerHTML='<div class="fgrid"><div class="field"><label>Chủ đề</label><input id="glt" type="text" placeholder="vd: top 5 nồi chiên..."></div><div class="field"><label>Số lượng</label><select id="gln"><option>Top 3</option><option>Top 5</option><option>Top 7</option><option>Top 10</option></select></div></div><button class="gen-btn" style="background:'+CP.btn+'" onclick="gen()"><span>📋</span> Tạo top list</button>';
+}
+
+function rGReview(){
+  var cats=[{k:'bep',l:'🍳 Bếp'},{k:'nuoc',l:'💧 Lọc nước'},{k:'noi',l:'🥘 Nồi chảo'},{k:'dl',l:'🌡 Điện lạnh'},{k:'sm',l:'📱 Thông minh'}];
+  document.getElementById('gpanel').innerHTML=
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">'+
+    cats.map(function(c){return '<button onclick="selGCat(\''+c.k+'\',this)" style="padding:7px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:var(--cream);color:var(--text-mid);transition:all .15s">'+c.l+'</button>';}).join('')+
+    '</div>'+
+    '<div class="brand-grid" id="gbg"></div>'+
+    '<div class="fgrid"><div class="field"><label>Hoặc tự nhập sản phẩm</label><input id="gprd" type="text" placeholder="vd: Nồi chiên Philips HD9252..."></div><div class="field"><label>Tầm giá</label><select id="gpr"><option>Dưới 500k</option><option>500k-1 triệu</option><option>1-3 triệu</option><option>3-10 triệu</option><option>Trên 10 triệu</option></select></div></div>'+
+    '<div class="field"><label>Điểm nổi bật (tuỳ chọn)</label><input id="ghl" type="text" placeholder="vd: tiết kiệm điện..."></div>'+
+    '<button class="gen-btn" style="background:'+CP.btn+'" onclick="gen()"><span>⭐</span> Tạo bài review</button>';
+}
+
+function selGCat(cat,btn){
+  document.querySelectorAll('#gpanel button').forEach(function(b){b.style.background='var(--cream)';b.style.borderColor='var(--border)';b.style.color='var(--text-mid)';});
+  btn.style.background='var(--purple-soft)';btn.style.borderColor='var(--purple)';btn.style.color='#5B4FA0';
+  var bl=B.gdung[cat]||[];
+  document.getElementById('gbg').innerHTML=bl.map(function(b){return '<div class="brand-card" onclick="selBGD(\''+b.n+'\',this)"><div class="bname">'+b.n+'</div><div class="bsub">'+b.s+'</div></div>';}).join('');
+}
+
+function selBGD(n,el){SB=n;document.querySelectorAll('#gbg .brand-card').forEach(function(c){c.classList.remove('sel');});el.classList.add('sel');}
+
+// ── GENERATE ──
+function buildPrompt(){
+  var pid=CP.id,ct=CT,g=pid===0?'nam':'nữ';
+  var brand=SB||gv('fcb')||'thuong hieu';
+  if(pid===0||pid===1){
+    if(ct==='brand') return 'Viet bai gioi thieu san pham thoi trang '+g+' Facebook. Brand: '+brand+'. SP: '+(gv('fpt')||'outfit')+'. Style: '+(gv('fst')||'Casual')+'.\n150-200 chu tieng Viet, hook manh, mo ta dep, goi y phoi, CTA. 15 hashtag.\n===BAI===\n(noi dung)\n===CAPTION===\n(caption+hashtag)';
+    if(ct==='trend') return 'Viet bai xu huong thoi trang '+g+' '+(gv('fs')||'He 2026')+' Facebook. Style: "'+(gv('fts')||'Casual')+'". 200-250 chu. 15 hashtag.\n===BAI===\n(noi dung)\n===CAPTION===\n(caption+hashtag)';
+    if(ct==='tips') return 'Viet bai tips phoi do '+g+' Facebook. Chu de: "'+(gv('ftp')||'phoi do')+'". 200-250 chu, 5 tips thuc te. 15 hashtag.\n===BAI===\n(noi dung)\n===CAPTION===\n(caption+hashtag)';
+    if(ct==='caption') return 'Viet caption thoi trang '+g+' Facebook. Anh: "'+(gv('fcd')||'outfit')+'". 80-120 chu, hook manh. 15 hashtag.\n===BAI===\n(caption)\n===CAPTION===\n(version ngan+hashtag)';
+  }
+  if(pid===2){
+    var brand2=SB||gv('fcb')||'brand';
+    if(ct==='fashion') return 'Viet bai gioi thieu thoi trang tre em Facebook. Brand: '+brand2+'. SP: '+(gv('fprd')||'quan ao')+'. Tuoi: '+(gv('fage')||'3-6 tuoi')+'.\n150-200 chu, mo ta dang yeu, chat lieu an toan. 15 hashtag.\n===BAI===\n(noi dung)\n===CAPTION===\n(caption+hashtag)';
+    if(ct==='toygd'||ct==='toycb') return 'Viet bai review do choi tre em Facebook. SP: '+brand2+'. Chi tiet: '+(gv('fdet')||'uu diem, phu hop ai')+'.\n200-250 chu: mo ta, loi ich, an toan. 15 hashtag.\n===BAI===\n(noi dung)\n===CAPTION===\n(caption+hashtag)';
+    if(ct==='book') return 'Viet bai gioi thieu sach thieu nhi Facebook. Sach: '+brand2+'. Chi tiet: '+(gv('fdet')||'noi dung, phu hop ai')+'.\n200-250 chu. 15 hashtag.\n===BAI===\n(noi dung)\n===CAPTION===\n(caption+hashtag)';
+    if(ct==='parent') return 'Viet bai tips nuoi day con Facebook. Chu de: "'+(gv('fpar')||'nuoi con')+'". 250-300 chu, 3-5 tips thuc te. 15 hashtag.\n===BAI===\n(noi dung)\n===CAPTION===\n(caption+hashtag)';
+  }
+  if(pid===3){
+    var sp=SB||gv('gprd')||'san pham gia dung';
+    if(ct==='review') return 'Viet bai review "'+sp+'" gia '+(gv('gpr')||'tam trung')+' Facebook gia dung.'+(gv('ghl')?' Noi bat: '+gv('ghl'):'')+'\n250-300 chu: mo ta, uu nhuoc, ai nen mua. 15 hashtag.\n===BAI===\n(noi dung)\n===CAPTION===\n(caption+hashtag)';
+    if(ct==='tips') return 'Viet bai tips gia dung ve "'+(gv('gtp')||'do gia dung')+'" Facebook. 200-250 chu, 5 tips. 15 hashtag.\n===BAI===\n(noi dung)\n===CAPTION===\n(caption+hashtag)';
+    if(ct==='compare') return 'Viet bai so sanh "'+(gv('gpa')||'SP A')+'" vs "'+(gv('gpb')||'SP B')+'" Facebook gia dung. 250-300 chu: gia, chat luong, ai nen mua. 15 hashtag.\n===BAI===\n(noi dung)\n===CAPTION===\n(caption+hashtag)';
+    if(ct==='toplist') return 'Viet bai "'+(gv('gln')||'Top 5')+' '+(gv('glt')||'san pham')+'" Facebook gia dung. 250-300 chu. 15 hashtag.\n===BAI===\n(noi dung)\n===CAPTION===\n(caption+hashtag)';
+  }
+  return '';
+}
+
+async function gen(){
+  var key=gv('api-key');
+  var err=document.getElementById('errm');
+  err.classList.remove('show');
+  if(!key){err.textContent='Vui long nhap API Key!';err.classList.add('show');return;}
+  var prompt=buildPrompt();
+  if(!prompt){err.textContent='Vui long dien day du thong tin!';err.classList.add('show');return;}
+  document.getElementById('ldm').classList.add('show');
+  document.getElementById('ow').classList.remove('show');
+  try{
+    var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,messages:[{role:'user',content:prompt}]})});
+    var d=await r.json();
+    document.getElementById('ldm').classList.remove('show');
+    if(d.error){err.textContent='API loi: '+d.error.message;err.classList.add('show');return;}
+    if(!d.content||!d.content[0]){err.textContent='Khong co response. Thu lai!';err.classList.add('show');return;}
+    var raw=d.content[0].text.trim();
+    var bai=raw.includes('===BAI===')?raw.split('===BAI===')[1].split('===CAPTION===')[0].trim():raw;
+    var cap=raw.includes('===CAPTION===')?raw.split('===CAPTION===')[1].trim():'';
+    rOut(bai,cap);
+  }catch(e){document.getElementById('ldm').classList.remove('show');err.textContent='Loi: '+e.message;err.classList.add('show');}
+}
+
+function rOut(bai,cap){
+  document.getElementById('ots').innerHTML='<div class="otab active" onclick="swO(0,this)">📝 Bài viết</div><div class="otab" onclick="swO(1,this)">📌 Caption</div>';
+  document.getElementById('ops').innerHTML=
+    '<div class="opanel active" id="op0"><div class="ocard"><div class="ocard-h"><span style="font-size:16px">📝</span><span style="font-size:13px;font-weight:500">Bài viết</span><span style="font-size:10px;color:var(--text-soft);margin-left:auto">✏️ Click chỉnh</span></div><div class="ocard-b"><div class="editable" id="obai" contenteditable="true" spellcheck="false">'+bai+'</div><div class="rrow"><input type="text" class="rinput" id="rbi" placeholder="Yêu cầu chỉnh..."><button class="rbtn" onclick="ren(\'bai\')">🔄</button></div><div class="crow"><button class="cbtn" id="cbb" onclick="cp(\'obai\',\'cbb\',\'📋 Copy bài\')">📋 Copy bài viết</button></div></div></div></div>'+
+    '<div class="opanel" id="op1"><div class="ocard"><div class="ocard-h"><span style="font-size:16px">📌</span><span style="font-size:13px;font-weight:500">Caption + Hashtag</span></div><div class="ocard-b"><div class="editable" id="ocap" contenteditable="true" spellcheck="false" style="white-space:pre-wrap">'+cap+'</div><div class="crow"><button class="cbtn" id="cbc" onclick="cp(\'ocap\',\'cbc\',\'📋 Copy\')">📋 Copy caption</button></div></div></div></div>';
+  document.getElementById('ow').classList.add('show');
+}
+
+function swO(i,el){document.querySelectorAll('.otab').forEach(function(t,j){t.classList.toggle('active',j===i);});document.querySelectorAll('.opanel').forEach(function(p,j){p.classList.toggle('active',j===i);});}
+
+async function ren(type){
+  var key=gv('api-key');
+  var fb=gv('r'+type[0]+'i');
+  var cur=document.getElementById('o'+type).innerText;
+  var btn=event.target;
+  if(!fb){alert('Gop yeu cau chinh truoc!');return;}
+  btn.textContent='⏳';btn.disabled=true;
+  try{
+    var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:800,messages:[{role:'user',content:'Bai viet: "'+cur+'"\nYeu cau: "'+fb+'"\nViet lai. Chi tra ve noi dung moi.'}]})});
+    var d=await r.json();
+    if(!d.error) document.getElementById('o'+type).textContent=d.content[0].text.trim();
+    document.getElementById('rb'+type[0]).value='';
+  }catch(e){alert('Loi: '+e.message);}
+  btn.textContent='🔄';btn.disabled=false;
+}
+
+// ── CHUA LANH ──
+function renderCL(){
+  document.getElementById('pb').innerHTML=
+    '<div class="cl-stats">'+
+    '<div class="cl-stat"><div class="cl-stat-n">30</div><div class="cl-stat-l">Ngày 23/5-22/6</div></div>'+
+    '<div class="cl-stat"><div class="cl-stat-n">60</div><div class="cl-stat-l">Bài viết</div></div>'+
+    '<div class="cl-stat"><div class="cl-stat-n">30</div><div class="cl-stat-l">🌿 Ảnh+Quote</div></div>'+
+    '<div class="cl-stat"><div class="cl-stat-n">30</div><div class="cl-stat-l">🎬 Video</div></div>'+
+    '</div>'+
+    '<div class="cl-legend">'+
+    '<div class="cl-leg"><div class="cl-dot" style="background:#5DAA7A"></div>Sáng — Ảnh + Câu nói</div>'+
+    '<div class="cl-leg"><div class="cl-dot" style="background:#C4667A"></div>Chiều — Video đồ uống</div>'+
+    '<div class="cl-leg"><div class="cl-dot" style="background:#C9A84C"></div>Ngày đặc biệt</div>'+
+    '</div>'+
+    '<div class="cal" id="calg"></div>'+
+    '<div class="dd" id="ddetail"></div>';
+  buildCal();
+}
+
+function buildCal(){
+  var g=document.getElementById('calg');
+  ['CN','Hai','Ba','Tư','Năm','Sáu','Bảy'].forEach(function(d){var h=document.createElement('div');h.className='cal-hdr';h.textContent=d;g.appendChild(h);});
+  for(var i=0;i<6;i++){var e=document.createElement('div');e.className='cal-cell em';g.appendChild(e);}
+  PLAN.forEach(function(day,idx){
+    var c=document.createElement('div');
+    c.className='cal-cell'+(day.sp?' sp':'');
+    c.onclick=(function(index,cell){return function(){showDD(index,cell);};})(idx,c);
+    c.innerHTML='<div class="cal-date">'+day.date+'</div>'+day.posts.map(function(p){return '<div class="pill '+(p.t==='i'?'pi':p.t==='v'?'pv':'ps')+'">'+(p.t==='i'?'🌿':p.t==='v'?'🎬':'⭐')+' '+p.ti.substring(0,16)+'...</div>';}).join('');
+    g.appendChild(c);
+  });
+}
+
+function showDD(idx,cell){
+  document.querySelectorAll('.cal-cell').forEach(function(c){c.classList.remove('on');});
+  cell.classList.add('on');
+  var day=PLAN[idx];
+  var dd=document.getElementById('ddetail');
+  dd.innerHTML='<div class="dd-title">📅 '+day.date+' — '+day.th+'</div>'+
+    day.posts.map(function(p,pi){
+      var hdr='dph-'+(p.t==='i'?'i':p.t==='v'?'v':'s');
+      var icon=p.t==='i'?'🌿':p.t==='v'?'🎬':'⭐';
+      var lbl=p.t==='i'?'ẢNH + QUOTE':p.t==='v'?'VIDEO':'ĐẶC BIỆT';
+      var id=idx+''+pi;
+      return '<div class="dpost">'+
+        '<div class="dpost-h '+hdr+'"><span style="font-size:15px">'+icon+'</span><span style="font-size:13px;font-weight:500;color:var(--text)">'+p.tm+' — '+p.ti+'</span><span style="font-size:10px;color:var(--text-soft);margin-left:auto;text-transform:uppercase">'+lbl+'</span></div>'+
+        '<div class="dpost-b">'+
+        '<div class="ds"><div class="ds-l">💬 Câu nói chữa lành</div><div class="ds-c" id="q'+id+'">'+p.q+'</div><button class="cbtn" style="margin-top:6px" onclick="cpEl(\'q'+id+'\',this)">📋 Copy</button></div>'+
+        '<div class="ds" style="margin-top:10px"><div class="ds-l">🎨 Prompt ảnh — Google Flow</div><div class="ds-c" id="pi'+id+'">'+p.pi+'</div><button class="cbtn" style="margin-top:6px" onclick="cpEl(\'pi'+id+'\',this)">📋 Copy prompt ảnh</button></div>'+
+        (p.pv?'<div class="ds" style="margin-top:10px"><div class="ds-l">🎬 Prompt video — Veo3</div><div class="ds-c" id="pv'+id+'" style="white-space:pre-wrap">'+p.pv+'</div><button class="cbtn" style="margin-top:6px" onclick="cpEl(\'pv'+id+'\',this)">📋 Copy prompt video</button></div>':'')+
+        '<div class="ds" style="margin-top:10px"><div class="ds-l">📌 Caption + Hashtag</div><div class="ds-c" id="ca'+id+'" style="white-space:pre-wrap">'+p.ca+'</div><button class="cbtn" style="margin-top:6px" onclick="cpEl(\'ca'+id+'\',this)">📋 Copy caption</button></div>'+
+        '</div></div>';
+    }).join('');
+  dd.classList.add('show');
+  setTimeout(function(){dd.scrollIntoView({behavior:'smooth',block:'start'});},100);
+}
+
+// ── UTILS ──
+function fbCopy(text){var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();document.execCommand('copy');document.body.removeChild(ta);}
+function cp(s,b,l){var text=document.getElementById(s).innerText,btn=document.getElementById(b);var done=function(){btn.textContent='✓ OK!';btn.classList.add('ok');setTimeout(function(){btn.textContent=l;btn.classList.remove('ok');},2000);};if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(text).then(done).catch(function(){fbCopy(text);done();});else{fbCopy(text);done();}}
+function cpEl(id,btn){var text=document.getElementById(id).innerText;var o=btn.textContent;var done=function(){btn.textContent='✓ OK!';btn.classList.add('ok');setTimeout(function(){btn.textContent=o;btn.classList.remove('ok');},2000);};if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(text).then(done).catch(function(){fbCopy(text);done();});else{fbCopy(text);done();}}
+
+selPage(0);
+</script>
+</body>
+</html>
